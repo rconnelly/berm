@@ -1,0 +1,9 @@
+﻿<ServiceConfiguration xmlns:scf="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" xmlns:xmu="urn:msbuildcommunitytasks-xmlmassupdate">
+    <scf:Role xmu:key="name" name="Web">
+        <scf:ConfigurationSettings>
+          <scf:Setting xmu:key="name" name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="${DiagnosticsConnection}" />
+          <scf:Setting xmu:key="name" name="ConnectionString.database" value="${DatabaseConnection}" />
+          <scf:Setting xmu:key="name" name="ConnectionString.storage" value="${StorageConnection}" />
+        </scf:ConfigurationSettings>
+    </scf:Role>
+</ServiceConfiguration>
