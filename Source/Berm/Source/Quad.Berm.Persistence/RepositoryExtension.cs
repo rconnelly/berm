@@ -1,6 +1,4 @@
-// ReSharper disable CheckNamespace
 namespace Quad.Berm.Persistence
-// ReSharper restore CheckNamespace
 {
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
@@ -8,7 +6,7 @@ namespace Quad.Berm.Persistence
     using System.Linq;
 
     using Quad.Berm.Common.Exceptions;
-    using Quad.Berm.Data.Common;
+    using Quad.Berm.Data.Specifications;
 
     public static class RepositoryExtension
     {
@@ -54,19 +52,6 @@ namespace Quad.Berm.Persistence
         {
             Contract.Assert(repository != null);
             return repository.Count<T>(queryData);
-        }
-
-        public static IEnumerable<T> FindAll<T>(this IRepository repository, IQueryData<T> queryData)
-        {
-            Contract.Assert(repository != null);
-            return repository.FindAll<T>((IQueryData)queryData);
-        }
-
-        public static IEnumerable<T> FindAll<T>(this IRepository repository, IQueryData queryData)
-        {
-            Contract.Assert(queryData != null);
-            var result = repository.Enumerable<T>(queryData);
-            return result;
         }
 
         public static T Load<T>(this IRepository repository, IQueryData<T> queryData)

@@ -19,5 +19,13 @@
 
             return this.View();
         }
+
+        [AllowAnonymous]
+        public ActionResult Error401()
+        {
+            this.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+            return this.View();
+        }
     }
 }

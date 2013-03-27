@@ -16,7 +16,7 @@
     using Quad.Berm.Common.Transactions;
     using Quad.Berm.Common.Unity;
     using Quad.Berm.Data;
-    using Quad.Berm.Data.Common;
+    using Quad.Berm.Data.Specifications;
     using Quad.Berm.Persistence.Impl.Commands;
 
     using Unity.AutoRegistration;
@@ -60,13 +60,13 @@
         protected override void Initialize()
         {
             this.Container
-                .RegisterType<DatabaseConfigurator, MsSql2005DatabaseConfigurator>("System.Data.SqlClient")
+                .RegisterType<DatabaseConfigurator, MsSql2008DatabaseConfigurator>("System.Data.SqlClient")
                 .RegisterType<DatabaseConfigurator>(new InjectionFactory(this.CreateDatabaseConfigurator))
                 .RegisterType<ISessionFactory>(
                     new ContainerControlledLifetimeManager(),
                     new InjectionFactory(CreateSessionFactory))
-                .RegisterType<ISession>(new UnitOfWorkLifetimeManager(), new InjectionFactory(this.CreateSession))
-                .RegisterType<IStatelessSession>(new UnitOfWorkLifetimeManager(), new InjectionFactory(this.CreateStatelessSession))
+                .RegisterType<ISession>(new AmbientContextLifetimeManager(), new InjectionFactory(this.CreateSession))
+                .RegisterType<IStatelessSession>(new AmbientContextLifetimeManager(), new InjectionFactory(this.CreateStatelessSession))
                 .RegisterType<Func<ISession>>(
                     new ContainerControlledLifetimeManager(), 
                     new InjectionFactory(

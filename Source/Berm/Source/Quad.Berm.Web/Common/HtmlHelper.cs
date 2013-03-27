@@ -7,7 +7,7 @@ namespace Quad.Berm.Web.Common
     using System.Web.Mvc;
     using System.Web.Mvc.Html;
 
-    using Quad.Berm.Common.Configuration;
+    using Quad.Berm.Common;
 
     public static class HtmlHelperExtended
     {

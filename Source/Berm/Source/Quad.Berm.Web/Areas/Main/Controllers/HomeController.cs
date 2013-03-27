@@ -1,14 +1,17 @@
 ﻿namespace Quad.Berm.Web.Areas.Main.Controllers
 {
-    using System;
     using System.Web.Mvc;
 
-    using Quad.Berm.Web.Areas.Main.Models;
-    using Quad.Berm.Web.Common.Controllers;
-    using Quad.Berm.Web.Common.Filters;
+    using Microsoft.Practices.Unity;
 
-    public class HomeController : Controller<HomeManager>
+    using Quad.Berm.Mvc;
+    using Quad.Berm.Web.Areas.Main.Models;
+
+    public class HomeController : Controller
     {
+        [Dependency]
+        public HomeManager Manager { get; set; }
+
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {

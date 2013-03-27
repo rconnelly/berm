@@ -11,7 +11,7 @@
 
     using NHibernate;
 
-    using Quad.Berm.Data.Common;
+    using Quad.Berm.Data.Specifications;
     using Quad.Berm.Persistence.Impl.Commands;
     using Quad.Berm.Persistence.Impl.Configuration;
 

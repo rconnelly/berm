@@ -2,7 +2,7 @@
 {
     using System.Web.Mvc;
 
-    using Quad.Berm.Web.Common;
+    using Quad.Berm.Mvc;
 
     public class MainAreaRegistration : AreaRegistration
     {
@@ -15,7 +15,9 @@
         {
             context.MapRoute(RouteHelper.Root, string.Empty, new { controller = "Home", action = "Index" });
             context.MapRoute(RouteHelper.Logon, "Login", new { controller = "Home", action = "Login" });
-            context.MapRoute("CreateTransaction", "CreateTransaction", new { controller = "Home", action = "Transaction" });
+            context.MapRoute(RouteHelper.Error404, "Error404", new { controller = "Error", action = "Error404" });
+            context.MapRoute(RouteHelper.Error403, "Error403", new { controller = "Error", action = "Error403" });
+            context.MapRoute(RouteHelper.Error401, "Error401", new { controller = "Error", action = "Error401" });
 
             context.MapRoute(
                 "Main_default",

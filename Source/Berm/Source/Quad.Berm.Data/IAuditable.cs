@@ -4,8 +4,8 @@ namespace Quad.Berm.Data
 
     public interface IAuditable
     {
-        DateTime Created { get; set; }
+        DateTime Created { get; }
 
-        DateTime? Modified { get; set; }
+        DateTime? Modified { get; }
     }
 }

@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using Quad.Berm.Data.Common;
+    using Quad.Berm.Data.Specifications;
 
     public interface IRepository
     {

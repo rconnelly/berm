@@ -130,28 +130,12 @@
       <DependentUpon>AccessRight.tt</DependentUpon>
     </Compile>
     <Compile Include="BaseEntity.cs" />
-    <Compile Include="Common\CommonCreateActionData.cs" />
-    <Compile Include="Common\CommonDeleteActionData.cs" />
-    <Compile Include="Common\CommonGetQueryData.Generic1.cs" />
-    <Compile Include="Common\CommonGetQueryData.Generic2.cs" />
-    <Compile Include="Common\CommonLazyGetQueryData.cs" />
-    <Compile Include="Common\IActionData.cs" />
-    <Compile Include="Common\IActionData.Generic.cs" />
-    <Compile Include="Common\IActionData.Instance.cs" />
-    <Compile Include="Common\CommonUpdateActionData.cs" />
-    <Compile Include="Common\IQueueQueryData.cs" />
-    <Compile Include="Common\IQueueQueryData.Generic.cs" />
     <Compile Include="IAuditable.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IIdentified.cs" />
-    <Compile Include="MetaDataInfo.cs" />
+    <Compile Include="InvalidState.cs" />
+    <Compile Include="MetadataInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\IQueryData.cs" />
-    <Compile Include="Common\IQueryData.Generic.cs" />
-    <Compile Include="Common\IQueryData.Instance.cs" />
-    <Compile Include="Common\ISpecification.cs" />
-    <Compile Include="Common\SpecificationBase.cs" />
-    <Compile Include="Common\SpecificationInstanceBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">
@@ -168,9 +152,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Specifications\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

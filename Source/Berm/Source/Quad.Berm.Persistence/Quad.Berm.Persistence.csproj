@@ -208,7 +208,7 @@
     <Compile Include="Impl\Configuration\Conventions\PrimaryKeyNameConvention.cs" />
     <Compile Include="Impl\Configuration\Conventions\TableNameConvention.cs" />
     <Compile Include="Impl\Configuration\DatabaseConfigurator.cs" />
-    <Compile Include="Impl\Configuration\MsSql2005DatabaseConfigurator.cs" />
+    <Compile Include="Impl\Configuration\MsSql2008DatabaseConfigurator.cs" />
     <Compile Include="Impl\Configuration\SqlExceptionNumber.cs" />
     <Compile Include="Impl\TransactionManager.cs" />
     <Compile Include="Impl\Utilities\Linq\ExpressionExtender.cs" />
@@ -230,6 +230,10 @@
     <ProjectReference Include="..\Quad.Berm.Common\Quad.Berm.Common.csproj">
       <Project>{148EB4D4-4DF2-4452-BE6E-34DC77351E53}</Project>
       <Name>Quad.Berm.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Quad.Berm.Data.Specifications\Quad.Berm.Data.Specifications.csproj">
+      <Project>{B199D2A4-3B2D-4224-80EA-120AEA52704D}</Project>
+      <Name>Quad.Berm.Data.Specifications</Name>
     </ProjectReference>
     <ProjectReference Include="..\Quad.Berm.Data\Quad.Berm.Data.csproj">
       <Project>{9167FA6C-34C0-4D74-8184-4D52D29CDADB}</Project>

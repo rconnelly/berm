@@ -6,7 +6,7 @@ namespace Quad.Berm.Persistence.Impl.Commands
     using NHibernate;
     using NHibernate.Linq;
 
-    using Quad.Berm.Data.Common;
+    using Quad.Berm.Data.Specifications;
 
     internal static class SpecificationExtension
     {

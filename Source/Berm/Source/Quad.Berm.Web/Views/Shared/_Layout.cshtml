@@ -1,13 +1,13 @@
-﻿@using Ach.Fulfillment.Web.Common
+﻿@using Quad.Berm.Web.Common
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>@ViewBag.Title - Ach.Fulfllment</title>
+        <title>@ViewBag.Title - Quad.Berm</title>
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        @Styles.Render("~/Content/css/jquery.ui", "~/Content/css/general")
-        @Scripts.Render("~/bundles/modernizr")
+        @Styles.Render("~/Content/css/general")
+        @Scripts.Render("~/bundles/general")
         @RenderSection("styles", required: false)
     </head>
     <body>
@@ -32,19 +32,13 @@
                     }
                     else
                     {
-                        <a class="brand" href="#">Ach.Fulfillment<sup>@Html.ApplicationVersion()</sup></a>
-                        <div class="nav-collapse">
-                            <ul class="nav">
-                                <li @Html.ActiveItem("Home", "Transaction")>@Html.ActionLink("Create transaction", "Transaction", "Home", new { area = "Main" }, null)</li>
-                            </ul>
-                        </div><!--/.nav-collapse -->
+                        <a class="brand" href="#">Quad.Berm<sup>@Html.ApplicationVersion()</sup></a>
                     }
                 </div>
             </div>
         </div>
         
         <div class="container">
-            @RenderSection("featured", required: false)
             @RenderBody()
             <hr>
             <footer>
@@ -57,7 +51,6 @@
             </footer>
         </div><!--/.container-->        
        
-        @Scripts.Render("~/bundles/jquery", "~/bundles/bootstrap")
         @RenderSection("scripts", required: false)
     </body>
 </html>

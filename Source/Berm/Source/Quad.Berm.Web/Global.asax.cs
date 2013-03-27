@@ -13,27 +13,25 @@
     using System.Web.Routing;
     using System.Web.Security;
 
-    using Microsoft.Practices.ServiceLocation;
+    using global::Common.Logging;
 
-    using Mvc.JQuery.Datatables;
+    using Microsoft.Practices.ServiceLocation;
 
     using Newtonsoft.Json.Serialization;
 
-    using Quad.Berm.Common;
     using Quad.Berm.Common.Security;
+    using Quad.Berm.Common.Unity;
+    using Quad.Berm.Mvc;
+    using Quad.Berm.Mvc.Data;
     using Quad.Berm.Web.App_Start;
     using Quad.Berm.Web.Areas.Main.Controllers;
-    using Quad.Berm.Web.Common;
-    using Quad.Berm.Web.Common.Data;
     using Quad.Berm.Web.Configuration;
-
-    using global::Common.Logging;
 
     public class MvcApplication : HttpApplication
     {
         #region Fields
 
-        private const string UnitOfWorkKey = "uow";
+        private const string AmbientContextKey = "uow";
 
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
@@ -50,29 +48,29 @@
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
+            // ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
             MvcHandler.DisableMvcResponseHeader = true;
 
-            var json = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
-            json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            this.Context.Items.Add(UnitOfWorkKey, new UnitOfWork());
+            this.Context.Items.Add(AmbientContextKey, new AmbientContext());
         }
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
+            return;
             this.Context.User = this.GetPrincipal();
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            var uow = (UnitOfWork)this.Context.Items[UnitOfWorkKey];
+            var uow = (AmbientContext)this.Context.Items[AmbientContextKey];
             Contract.Assert(uow != null);
             uow.Dispose();
-            this.Context.Items.Remove(UnitOfWorkKey);
+            this.Context.Items.Remove(AmbientContextKey);
         }
 
         protected void Application_Error()
@@ -146,7 +144,7 @@
             {
                 var status = httpException.GetHttpCode();
 
-                if (status == 404 || status == 403)
+                if (status == 404 || status == 403 || status == 401)
                 {
                     var routeData = new RouteData();
 

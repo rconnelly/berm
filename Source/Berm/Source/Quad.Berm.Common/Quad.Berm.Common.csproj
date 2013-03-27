@@ -147,8 +147,7 @@
     <Compile Include="..\..\Common\GlobalVersionInfo.cs">
       <Link>Properties\GlobalVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Configuration\AssemblyExtension.cs" />
-    <Compile Include="Exceptions\AggregatedExceptionTextFormatter.cs" />
+    <Compile Include="AssemblyExtender.cs" />
     <Compile Include="Exceptions\DeleteConstraintException.cs" />
     <Compile Include="Exceptions\ExceptionExtender.cs" />
     <Compile Include="Exceptions\ExecutionConstraintException.cs" />
@@ -160,17 +159,17 @@
     <Compile Include="Security\IApplicationIdentity.cs" />
     <Compile Include="Security\IApplicationPrincipal.cs" />
     <Compile Include="Security\ThreadApplicationPrincipal.cs" />
-    <Compile Include="Shell.cs" />
+    <Compile Include="Unity\Shell.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transactions\ITransactionManager.cs" />
     <Compile Include="Transactions\Transaction.cs" />
-    <Compile Include="Unity\UnitOfWorkLifetimeHttpContextStore.cs" />
-    <Compile Include="Unity\UnitOfWorkLifetimeStore.cs" />
-    <Compile Include="Unity\UnitOfWorkLifetimeThreadLocalStore.cs" />
-    <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="UnitOfWork.cs" />
+    <Compile Include="Unity\AmbientContextLifetimeHttpContextStore.cs" />
+    <Compile Include="Unity\AmbientContextLifetimeStore.cs" />
+    <Compile Include="Unity\AmbientContextLifetimeThreadLocalStore.cs" />
+    <Compile Include="StringExtender.cs" />
+    <Compile Include="Unity\AmbientContext.cs" />
     <Compile Include="Unity\AutoRegistrationExtension.cs" />
-    <Compile Include="Unity\UnitOfWorkLifetimeManager.cs" />
+    <Compile Include="Unity\AmbientContextLifetimeManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">

@@ -11,20 +11,26 @@
 
     public class HomeManager
     {
-        [Dependency]
-        public IApplicationPrincipal Principal { get; set; }
+        //[Dependency]
+        //public IApplicationPrincipal Principal { get; set; }
 
         [Dependency]
         public ObjectCache Cache { get; set; }
 
         public bool Login(LoginModel model)
         {
-            throw new NotImplementedException();
+            var authenticated = string.Equals(model.UserName, model.Password);
+            if (authenticated)
+            {
+                FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+            }
+
+            return authenticated;
         }
 
         public void Logout()
         {
-            this.Cache.Remove(this.Principal.Identity.Name);
+            // this.Cache.Remove(this.Principal.Identity.Name);
 
             FormsAuthentication.SignOut();
         }

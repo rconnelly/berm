@@ -1,4 +1,4 @@
-namespace Quad.Berm.Persistence.Impl.Utilities.Linq
+﻿namespace Quad.Berm.Persistence.Impl.Utilities.Linq
 {
     using System;
     using System.Collections.Generic;

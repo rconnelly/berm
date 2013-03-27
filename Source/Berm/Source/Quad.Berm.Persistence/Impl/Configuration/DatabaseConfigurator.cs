@@ -4,6 +4,8 @@
     using System.Configuration;
     using System.Diagnostics.Contracts;
 
+    using global::Common.Logging;
+
     using FluentNHibernate.Automapping;
     using FluentNHibernate.Cfg;
     using FluentNHibernate.Cfg.Db;
@@ -17,8 +19,6 @@
 
     using Quad.Berm.Data;
     using Quad.Berm.Persistence.Impl.Configuration.Conventions;
-
-    using global::Common.Logging;
 
     internal abstract class DatabaseConfigurator
     {
@@ -53,7 +53,7 @@
         {
             get
             {
-                string defaultDatabase = DefaultDatabaseConnectionName;
+                var defaultDatabase = DefaultDatabaseConnectionName;
                 
                 var configurationSource = ConfigurationSourceFactory.Create();
                 var settings = DatabaseSettings.GetDatabaseSettings(configurationSource);

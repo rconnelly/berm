@@ -2,7 +2,7 @@
 {
     using System.Web.Mvc;
 
-    using Quad.Berm.Web.Common.Filters;
+    using Quad.Berm.Mvc;
 
     public class FilterConfig
     {
@@ -10,8 +10,8 @@
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new WebHandleErrorAttribute { Order = 2 });
-            filters.Add(new AuthorizeAttribute { Order = 3 });
+            filters.Add(new WebHandleErrorAttribute { Order = 5 });
+            filters.Add(new AuthorizeAttribute { Order = 10 });
         }
 
         #endregion
