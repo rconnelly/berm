@@ -1,0 +1,171 @@
+﻿namespace Quad.Berm.Web
+{
+    using System;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
+    using System.Runtime.Caching;
+    using System.Security.Principal;
+    using System.Web;
+    using System.Web.Http;
+    using System.Web.Mvc;
+    using System.Web.Optimization;
+    using System.Web.Routing;
+    using System.Web.Security;
+
+    using Microsoft.Practices.ServiceLocation;
+
+    using Mvc.JQuery.Datatables;
+
+    using Newtonsoft.Json.Serialization;
+
+    using Quad.Berm.Common;
+    using Quad.Berm.Common.Security;
+    using Quad.Berm.Web.App_Start;
+    using Quad.Berm.Web.Areas.Main.Controllers;
+    using Quad.Berm.Web.Common;
+    using Quad.Berm.Web.Common.Data;
+    using Quad.Berm.Web.Configuration;
+
+    using global::Common.Logging;
+
+    public class MvcApplication : HttpApplication
+    {
+        #region Fields
+
+        private const string UnitOfWorkKey = "uow";
+
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
+
+        #endregion
+
+        #region Methods
+
+        protected void Application_Start()
+        {
+            Shell.Start<WebContainerExtension>();
+
+            AreaRegistration.RegisterAllAreas();
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
+            MvcHandler.DisableMvcResponseHeader = true;
+
+            var json = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
+            json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        }
+
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            this.Context.Items.Add(UnitOfWorkKey, new UnitOfWork());
+        }
+
+        protected void Application_AuthenticateRequest(object sender, EventArgs e)
+        {
+            this.Context.User = this.GetPrincipal();
+        }
+
+        protected void Application_EndRequest(object sender, EventArgs e)
+        {
+            var uow = (UnitOfWork)this.Context.Items[UnitOfWorkKey];
+            Contract.Assert(uow != null);
+            uow.Dispose();
+            this.Context.Items.Remove(UnitOfWorkKey);
+        }
+
+        protected void Application_Error()
+        {
+            var error = this.Server.GetLastError();
+            try
+            {
+                Log.ErrorFormat(
+                    CultureInfo.InvariantCulture, 
+                    "Server error has been occured while processing page: {0} ", 
+                    error,
+                    HttpContext.Current != null ? HttpContext.Current.Request.Url.ToString() : "unknown");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.Message);
+            }
+
+            this.HandleCustomErrors(error);
+        }
+
+        protected void Application_End()
+        {
+            Shell.Shutdown();
+        }
+
+        private IPrincipal GetPrincipal()
+        {
+            IPrincipal principal = ApplicationPrincipal.Anonymous;
+            var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie != null)
+            {
+                var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                if (authTicket != null && !authTicket.Expired)
+                {
+                    var login = authTicket.Name;
+                    var cache = ServiceLocator.Current.GetInstance<ObjectCache>();
+
+                    var session = cache.Get(login) as PrincipalSession;
+                    if (session == null)
+                    {
+                        throw new NotImplementedException();
+                        /*var manager = ServiceLocator.Current.GetInstance<IUserManager>();
+                        var user = manager.FindByLogin(login);
+
+                        if (user != null && user.UserPasswordCredential != null)
+                        {
+                            session = user.Convert();
+                            cache.Add(
+                                login, 
+                                session, 
+                                new CacheItemPolicy { SlidingExpiration = new TimeSpan(0, 0, 60) });
+                        }*/
+                    }
+
+                    if (session != null)
+                    {
+                        principal = session.Convert();
+                    }
+                }
+            }
+
+            return principal;
+        }
+
+        private void HandleCustomErrors(Exception exception)
+        {
+            var httpException = exception as HttpException;
+
+            if (httpException != null)
+            {
+                var status = httpException.GetHttpCode();
+
+                if (status == 404 || status == 403)
+                {
+                    var routeData = new RouteData();
+
+                    RouteHelper.InitErrorRoute(status, routeData);
+
+                    // Clear the error on server.
+                    this.Server.ClearError();
+
+                    // Avoid IIS7 getting in the middle
+                    this.Response.StatusCode = status;
+                    this.Response.TrySkipIisCustomErrors = true;
+
+                    // idially we should get controller throught servicelocator
+                    IController errorController = new ErrorController();
+                    errorController.Execute(new RequestContext(new HttpContextWrapper(this.Context), routeData));
+                }
+            }
+        }
+
+        #endregion
+    }
+}

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="Berm.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2012-10.1.8">
+  <WebRole name="Quad.Berm.Web" vmsize="Small">
+    <Imports>
+      <Import moduleName="Diagnostics" />
+    </Imports>
+    <Sites>
+      <Site name="Web">
+        <Bindings>
+          <Binding name="Basic" endpointName="Unsecure" />
+        </Bindings>
+      </Site>
+    </Sites>
+    <Endpoints>
+      <InputEndpoint name="Unsecure" protocol="http" port="80" />
+    </Endpoints>
+    <ConfigurationSettings>
+      <Setting name="ConnectionString.database" />
+      <Setting name="ConnectionString.storage" />
+    </ConfigurationSettings>
+  </WebRole>
+</ServiceDefinition>
