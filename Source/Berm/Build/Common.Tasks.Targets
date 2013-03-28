@@ -49,20 +49,11 @@
             <Output TaskParameter="Build" PropertyName="Build" />
         </MSBuild.Community.Tasks.Version>
 
-        <ConvertToAbsolutePath Paths="$(ProjectRoot)">
-            <Output TaskParameter="AbsolutePaths" PropertyName="ProjectRootAbsolute" />
-        </ConvertToAbsolutePath>
+        <GitVersion LocalPath="$(ProjectRoot)">
+            <Output TaskParameter="Changeset" PropertyName="Changeset"/>
+            <Output TaskParameter="Revision" PropertyName="BuildRevision"/>
+        </GitVersion>
 
-        <!-- check that project is in svn -->
-        <MSBuild.Community.Tasks.Subversion.SvnInfo LocalPath="$(ProjectRootAbsolute)" ContinueOnError="true">
-          <Output TaskParameter="RepositoryRoot" PropertyName="RepositoryRoot" />
-        </MSBuild.Community.Tasks.Subversion.SvnInfo>
-
-        <!-- read revision from svn -->
-        <MSBuild.Community.Tasks.Subversion.SvnVersion LocalPath="$(ProjectRootAbsolute)" ContinueOnError="false" Condition="$(RepositoryRoot)!=''" >
-          <Output TaskParameter="Revision" PropertyName="BuildRevision" />
-        </MSBuild.Community.Tasks.Subversion.SvnVersion>
-        
         <!-- create build version number -->
         <CreateProperty Value="$(Major).$(Minor).$(Build).$(BuildRevision)">
             <Output
