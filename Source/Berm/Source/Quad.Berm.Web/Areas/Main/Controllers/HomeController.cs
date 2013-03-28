@@ -20,7 +20,7 @@
             return this.View();
         }
 
-        [HttpPost]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#"), HttpPost]
         [AllowAnonymous]
         [WebValidationFilter]
         public ActionResult Login(LoginModel model, string returnUrl)

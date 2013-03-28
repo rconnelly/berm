@@ -1,6 +1,7 @@
 namespace Quad.Berm.Mvc
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Principal;
@@ -10,8 +11,9 @@ namespace Quad.Berm.Mvc
     using Quad.Berm.Common.Security;
     using Quad.Berm.Data;
 
+    [Obsolete("Use WIF")]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public class PrincipalRightPermissionAttribute : AuthorizeAttribute
+    public sealed class PrincipalRightPermissionAttribute : AuthorizeAttribute
     {
         #region Constants and Fields
 
@@ -21,15 +23,16 @@ namespace Quad.Berm.Mvc
 
         #region Constructors and Destructors
 
-        public PrincipalRightPermissionAttribute(params AccessRight[] accessRightOr)
+        public PrincipalRightPermissionAttribute(params AccessRight[] accessRights)
         {
-            this.AccessRights = accessRightOr;
+            this.AccessRights = accessRights;
         }
 
         #endregion
 
         #region Public Properties
 
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "As Designed")]
         public AccessRight[] AccessRights
         {
             get
@@ -39,7 +42,7 @@ namespace Quad.Berm.Mvc
                      select (AccessRight)Enum.Parse(typeof(AccessRight), accessRight)).ToArray();
             }
 
-            set
+            private set
             {
                 this.accessRights =
                     (from accessRight in value ?? new AccessRight[0] select accessRight.ToString("G")).ToArray();

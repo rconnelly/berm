@@ -1,6 +1,7 @@
 namespace Quad.Berm.Persistence
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
@@ -47,7 +48,7 @@ namespace Quad.Berm.Persistence
             return repository.Load(new CommonLazyGetQueryData<T> { Key = id });
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static int Count<T>(this IRepository repository, IQueryData<T> queryData)
         {
             Contract.Assert(repository != null);
@@ -73,7 +74,7 @@ namespace Quad.Berm.Persistence
             return instance;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static T FindOne<T>(this IRepository repository, IQueryData<T> queryData)
         {
             Contract.Assert(repository != null);
@@ -87,6 +88,7 @@ namespace Quad.Berm.Persistence
             return result;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static IEnumerable<T> Enumerable<T>(this IRepository repository, IQueryData<T> queryData)
         {
             Contract.Assert(repository != null);
@@ -94,6 +96,7 @@ namespace Quad.Berm.Persistence
             return result;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static IQueryable<T> Query<T>(this IRepository repository, IQueryData<T> queryData)
         {
             Contract.Assert(repository != null);

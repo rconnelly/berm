@@ -1,6 +1,7 @@
-namespace Quad.Berm.Web.Common
+namespace Quad.Berm.Web.Mvc.Helpers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Web;
@@ -11,6 +12,7 @@ namespace Quad.Berm.Web.Common
 
     public static class HtmlHelperExtended
     {
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "html", Justification = "As Designed")]
         public static MvcHtmlString ApplicationVersion<TModel>(this HtmlHelper<TModel> html)
         {
             var version = typeof(HtmlHelperExtended).Assembly.EffectiveVersion();
@@ -18,6 +20,7 @@ namespace Quad.Berm.Web.Common
             return MvcHtmlString.Create(version);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "As Designed")]
         public static MvcHtmlString RequiredLabelFor<TModel, TValue>(this HtmlHelper<TModel> html, System.Linq.Expressions.Expression<Func<TModel, TValue>> expression)
         {
             var label = html.LabelFor(expression);
@@ -27,6 +30,7 @@ namespace Quad.Berm.Web.Common
             return MvcHtmlString.Create(required);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static IHtmlString ActiveItem<TModel>(
             this HtmlHelper<TModel> html, 
             string controller,
@@ -38,6 +42,7 @@ namespace Quad.Berm.Web.Common
             return html.Raw(result);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static IHtmlString ActiveController<TModel>(
             this HtmlHelper<TModel> html,
             params string[] controllers)
@@ -45,7 +50,7 @@ namespace Quad.Berm.Web.Common
             Contract.Assert(controllers != null);
 
             var currentController = html.ViewContext.RouteData.GetRequiredString("controller");
-            var result = controllers.Any(c => c.Equals(currentController, StringComparison.InvariantCultureIgnoreCase)) ? "class=\"active\"" : string.Empty;
+            var result = controllers.Any(c => c.Equals(currentController, StringComparison.OrdinalIgnoreCase)) ? "class=\"active\"" : string.Empty;
             return html.Raw(result);
         }
 

@@ -9,7 +9,7 @@ namespace Quad.Berm.Mvc
     using Quad.Berm.Mvc.Configuration;
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public class WebHandleErrorAttribute : HandleErrorAttribute
+    public sealed class WebHandleErrorAttribute : HandleErrorAttribute
     {
         public override void OnException(ExceptionContext filterContext)
         {
@@ -30,7 +30,7 @@ namespace Quad.Berm.Mvc
                 return;
             }
 
-            var handledException = exception.TransformException(PolicyMetadata.DefaultPolicy);
+            var handledException = exception.TransformException(MvcContainerExtension.DefaultPolicy);
 
             // avoid showing death screen even for not 500 error in production
             var httpCode = new HttpException(null, exception).GetHttpCode();

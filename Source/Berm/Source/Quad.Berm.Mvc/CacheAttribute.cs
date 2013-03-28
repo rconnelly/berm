@@ -1,10 +1,12 @@
 namespace Quad.Berm.Mvc
 {
+    using System;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
 
-    public class CacheAttribute : OutputCacheAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    public sealed class CacheAttribute : OutputCacheAttribute
     {
         #region Constants and Fields
 
@@ -41,7 +43,16 @@ namespace Quad.Berm.Mvc
 
         #region Methods
 
-        protected void OnCacheEnabled(ResultExecutingContext filterContext)
+        // This method is called each time when cached page is going to be
+        // served and ensures that cache is ignored for authenticated users.
+        private static void IgnoreAuthenticated(HttpContext context, object data, ref HttpValidationStatus validationStatus)
+        {
+            validationStatus = context.User.Identity.IsAuthenticated
+                                   ? HttpValidationStatus.IgnoreThisRequest
+                                   : HttpValidationStatus.Valid;
+        }
+
+        private void OnCacheEnabled(ControllerContext filterContext)
         {
             var httpContext = filterContext.HttpContext;
             if (this.IsCacheDisabled(httpContext))
@@ -58,7 +69,7 @@ namespace Quad.Berm.Mvc
             if (this.DisableForAuthenticatedUser)
             {
                 // this smells a little but it works
-                httpContext.Response.Cache.AddValidationCallback(this.IgnoreAuthenticated, null);
+                httpContext.Response.Cache.AddValidationCallback(IgnoreAuthenticated, null);
             }
         }
 
@@ -67,15 +78,6 @@ namespace Quad.Berm.Mvc
             return 
                 httpContext.IsDebuggingEnabled || 
                 (this.DisableForAuthenticatedUser && httpContext.User.Identity.IsAuthenticated);
-        }
-
-        // This method is called each time when cached page is going to be
-        // served and ensures that cache is ignored for authenticated users.
-        private void IgnoreAuthenticated(HttpContext context, object data, ref HttpValidationStatus validationStatus)
-        {
-            validationStatus = context.User.Identity.IsAuthenticated
-                                   ? HttpValidationStatus.IgnoreThisRequest
-                                   : HttpValidationStatus.Valid;
         }
 
         #endregion

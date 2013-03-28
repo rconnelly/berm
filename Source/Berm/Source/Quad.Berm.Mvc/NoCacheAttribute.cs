@@ -4,7 +4,8 @@ namespace Quad.Berm.Mvc
     using System.Web;
     using System.Web.Mvc;
 
-    public class NoCacheAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+    public sealed class NoCacheAttribute : ActionFilterAttribute
     {
         public override void OnResultExecuting(ResultExecutingContext filterContext)
         {

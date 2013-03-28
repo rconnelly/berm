@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="Berm.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2012-10.1.8">
-  <WebRole name="Quad.Berm.Web" vmsize="Small">
+  <WebRole name="Web" vmsize="Small">
     <Imports>
       <Import moduleName="Diagnostics" />
     </Imports>

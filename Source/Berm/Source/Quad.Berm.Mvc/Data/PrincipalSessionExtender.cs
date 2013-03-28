@@ -1,9 +1,13 @@
 namespace Quad.Berm.Mvc.Data
 {
+    using System;
     using System.Diagnostics.Contracts;
 
     using Quad.Berm.Common.Security;
 
+    using ApplicationIdentity = Quad.Berm.Common.Security.ApplicationIdentity;
+
+    [Obsolete("Should be removed")]
     public static class PrincipalSessionExtender
     {
         /*public static PrincipalSession Convert(this UserEntity user)
@@ -28,7 +32,7 @@ namespace Quad.Berm.Mvc.Data
         {
             Contract.Assert(session != null);
 
-            var identity = new ApplicationIdentity(session.UserId, session.Login, session.Name, session.Email);
+            var identity = new ApplicationIdentity(session.UserId, session.UserName, session.DisplayName, session.Email);
             var principal = new ApplicationPrincipal(identity, session.Role, session.Permissions);
 
             return principal;

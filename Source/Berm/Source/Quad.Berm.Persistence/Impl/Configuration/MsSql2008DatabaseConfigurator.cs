@@ -2,7 +2,6 @@ namespace Quad.Berm.Persistence.Impl.Configuration
 {
     using System;
     using System.Data.SqlClient;
-    using System.Diagnostics;
 
     using FluentNHibernate.Cfg.Db;
 
@@ -11,20 +10,10 @@ namespace Quad.Berm.Persistence.Impl.Configuration
 
     internal class MsSql2008DatabaseConfigurator : DatabaseConfigurator
     {
-        public override void CreateDatabase()
-        {
-            Trace.WriteLine("Database creation not supported");
-        }
-
-        public override bool DatabaseExists()
-        {
-            return true;
-        }
-
         protected override IPersistenceConfigurer CreatePersistenceConfigurator()
         {
             var configuration = MsSqlConfiguration.MsSql2008
-                .DefaultSchema("ach")
+                .DefaultSchema("berm")
                 .ConnectionString(this.RuntimeConnectionString);
 #if DEBUG
             configuration = configuration.FormatSql();

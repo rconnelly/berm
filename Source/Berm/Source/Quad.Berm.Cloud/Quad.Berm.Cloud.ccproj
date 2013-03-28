@@ -38,11 +38,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Quad.Berm.Web\Quad.Berm.Web.csproj">
-      <Name>Quad.Berm.Web</Name>
+      <Name>Web</Name>
       <Project>{6e5c092c-b010-4f67-ac7b-96a1a54ddbb9}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>Quad.Berm.Web</RoleName>
+      <RoleName>Web</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
   </ItemGroup>

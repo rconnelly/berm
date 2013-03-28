@@ -5,7 +5,7 @@ namespace Quad.Berm.Mvc.Data
 
     using Quad.Berm.Business.Exceptions;
 
-    public static class OperationErrorExtension
+    public static class OperationErrorExtender
     {
         public static void Fill(this OperationError operationError, BusinessValidationException ex)
         {

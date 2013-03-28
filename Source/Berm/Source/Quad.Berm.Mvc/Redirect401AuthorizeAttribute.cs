@@ -6,7 +6,7 @@ namespace Quad.Berm.Mvc
     using System.Web.Mvc;
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public class Redirect401AuthorizeAttribute : AuthorizeAttribute
+    public sealed class Redirect401AuthorizeAttribute : AuthorizeAttribute
     {
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {

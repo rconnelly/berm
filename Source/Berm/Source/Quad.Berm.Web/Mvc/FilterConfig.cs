@@ -1,11 +1,11 @@
-﻿namespace Quad.Berm.Web.App_Start
+﻿namespace Quad.Berm.Web.Mvc
 {
     using System.Web.Mvc;
 
     using Quad.Berm.Mvc;
 
-    public class FilterConfig
-    {
+    public static class FilterConfig
+    {              
         #region Public Methods and Operators
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)

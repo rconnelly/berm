@@ -1,5 +1,6 @@
 namespace Quad.Berm.Mvc
 {
+    using System;
     using System.Net;
     using System.Web.Mvc;
 
@@ -8,7 +9,8 @@ namespace Quad.Berm.Mvc
     using Quad.Berm.Mvc.Configuration;
     using Quad.Berm.Mvc.Data;
 
-    public class ApiValidationFilterAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+    public sealed class ApiValidationFilterAttribute : ActionFilterAttribute
     {
         public ApiValidationFilterAttribute()
         {
@@ -22,7 +24,7 @@ namespace Quad.Berm.Mvc
                 return;
             }
 
-            var transformedException = filterContext.Exception.TransformException(PolicyMetadata.ApiValidationPolicy);
+            var transformedException = filterContext.Exception.TransformException(MvcContainerExtension.ApiValidationPolicy);
 
             HttpStatusCode statusCode;
             OperationError operationError;

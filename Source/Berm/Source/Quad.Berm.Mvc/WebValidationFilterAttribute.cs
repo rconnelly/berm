@@ -1,5 +1,6 @@
 namespace Quad.Berm.Mvc
 {
+    using System;
     using System.Web.Mvc;
 
     using Quad.Berm.Business.Exceptions;
@@ -8,7 +9,8 @@ namespace Quad.Berm.Mvc
     using Quad.Berm.Mvc.Data;
 
     // we could use Controller.OnException but I havn't found the way how to know what view is being rendered if it's not the same as action
-    public class WebValidationFilterAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+    public sealed class WebValidationFilterAttribute : ActionFilterAttribute
     {
         private readonly string view;
 
@@ -18,6 +20,14 @@ namespace Quad.Berm.Mvc
             this.Order = 10;
         }
 
+        public string View
+        {
+            get
+            {
+                return this.view;
+            }
+        }
+
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (filterContext.Exception == null)
@@ -25,7 +35,7 @@ namespace Quad.Berm.Mvc
                 return;
             }
 
-            var transformedException = filterContext.Exception.TransformException(PolicyMetadata.WebValidationPolicy);
+            var transformedException = filterContext.Exception.TransformException(MvcContainerExtension.WebValidationPolicy);
             var exception = transformedException as BusinessValidationException;
             if (exception != null)
             {
@@ -39,7 +49,7 @@ namespace Quad.Berm.Mvc
                                             {
                                                 // if view is not defined - use action name by default
                                                 ViewName =
-                                                    this.view
+                                                    this.View
                                                     ?? filterContext.RouteData.Values["action"].ToString(),
                                                 TempData = filterContext.Controller.TempData,
                                                 ViewData = filterContext.Controller.ViewData

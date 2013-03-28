@@ -22,13 +22,14 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;CODE_ANALYSIS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
@@ -65,13 +66,13 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>..\..\..\..\..\..\EleganceUkraine\Mkb\trunk\02-Source\Mkb\Common\Rules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Common\Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;CONTRACTS_FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
@@ -114,7 +115,7 @@
       .allowedextension
     </AllowedReferenceRelatedFileExtensions>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>..\..\..\..\..\..\EleganceUkraine\Mkb\trunk\02-Source\Mkb\Common\Rules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Common\Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
@@ -271,41 +272,45 @@
     <Compile Include="..\..\Common\GlobalVersionInfo.cs">
       <Link>Properties\GlobalVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Mvc\BundleConfig.cs" />
+    <Compile Include="Mvc\FilterConfig.cs" />
+    <Compile Include="Mvc\RouteConfig.cs" />
     <Compile Include="Areas\Main\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Main\Controllers\HomeController.cs" />
     <Compile Include="Areas\Main\Controllers\HomeManager.cs" />
     <Compile Include="Areas\Main\MainAreaRegistration.cs" />
     <Compile Include="Areas\Main\Models\LoginModel.cs" />
-    <Compile Include="Common\HtmlHelper.cs" />
-    <Compile Include="Configuration\WebContainerExtension.cs" />
+    <Compile Include="Mvc\Helpers\HtmlHelper.cs" />
+    <Compile Include="Mvc\Configuration\WebContainerExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Mvc\Helpers\RouteHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebRole.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\Common\Dictionary.xml">
+    <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">
       <Link>Properties\Dictionary.xml</Link>
-    </Content>
-    <Content Include="Content\bootstrap-responsive.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\images\glyphicons-halflings-white.png" />
-    <Content Include="Content\images\glyphicons-halflings.png" />
+    </CodeAnalysisDictionary>
+    <Content Include="css\bootstrap-responsive.css" />
+    <Content Include="css\bootstrap.css" />
+    <Content Include="css\main.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Content\images\header_logo.png" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\jquery-1.8.3.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\modernizr-2.0.6-development-only.js" />
-    <Content Include="Scripts\mvcfoolproof.unobtrusive.js" />
-    <Content Include="Scripts\site.bootstrap.validate.js" />
+    <Content Include="img\glyphicons-halflings-white.png" />
+    <Content Include="img\glyphicons-halflings.png" />
+    <Content Include="img\header_logo.png" />
+    <Content Include="js\vendor\additional-methods.js" />
+    <Content Include="js\vendor\bootstrap-2.3.1.js" />
+    <Content Include="js\vendor\jquery-1.9.1.js" />
+    <Content Include="js\vendor\jquery-migrate-1.1.1.js" />
+    <Content Include="js\vendor\jquery.unobtrusive-ajax.js" />
+    <Content Include="js\vendor\jquery.validate-1.11.1.js" />
+    <Content Include="js\vendor\jquery.validate.unobtrusive.js" />
+    <Content Include="js\vendor\modernizr-2.6.2.js" />
+    <Content Include="js\vendor\mvcfoolproof.unobtrusive.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -315,7 +320,6 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Content\site.css" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
@@ -325,9 +329,6 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js.map">
-      <DependentUpon>jquery.validate.unobtrusive.js</DependentUpon>
-    </Content>
     <Content Include="Views\Shared\Error401.cshtml" />
   </ItemGroup>
   <ItemGroup>

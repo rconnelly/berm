@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Runtime.Caching;
@@ -21,17 +22,17 @@
 
     using Quad.Berm.Common.Security;
     using Quad.Berm.Common.Unity;
-    using Quad.Berm.Mvc;
     using Quad.Berm.Mvc.Data;
-    using Quad.Berm.Web.App_Start;
     using Quad.Berm.Web.Areas.Main.Controllers;
-    using Quad.Berm.Web.Configuration;
+    using Quad.Berm.Web.Mvc;
+    using Quad.Berm.Web.Mvc.Configuration;
+    using Quad.Berm.Web.Mvc.Helpers;
 
     public class MvcApplication : HttpApplication
     {
         #region Fields
 
-        private const string AmbientContextKey = "uow";
+        private const string AmbientContextKey = "ac";
 
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
@@ -39,18 +40,20 @@
 
         #region Methods
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "As Designed")]
         protected void Application_Start()
         {
             Shell.Start<WebContainerExtension>();
 
             AreaRegistration.RegisterAllAreas();
+
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             // ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
             MvcHandler.DisableMvcResponseHeader = true;
-
+            
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
@@ -62,7 +65,7 @@
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
             return;
-            this.Context.User = this.GetPrincipal();
+            this.Context.User = GetPrincipal();
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)
@@ -73,6 +76,7 @@
             this.Context.Items.Remove(AmbientContextKey);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "As Designed")]
         protected void Application_Error()
         {
             var error = this.Server.GetLastError();
@@ -92,12 +96,13 @@
             this.HandleCustomErrors(error);
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "As Designed")]
         protected void Application_End()
         {
             Shell.Shutdown();
         }
 
-        private IPrincipal GetPrincipal()
+        private static IPrincipal GetPrincipal()
         {
             IPrincipal principal = ApplicationPrincipal.Anonymous;
             var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
@@ -146,10 +151,6 @@
 
                 if (status == 404 || status == 403 || status == 401)
                 {
-                    var routeData = new RouteData();
-
-                    RouteHelper.InitErrorRoute(status, routeData);
-
                     // Clear the error on server.
                     this.Server.ClearError();
 
@@ -157,9 +158,13 @@
                     this.Response.StatusCode = status;
                     this.Response.TrySkipIisCustomErrors = true;
 
-                    // idially we should get controller throught servicelocator
-                    IController errorController = new ErrorController();
-                    errorController.Execute(new RequestContext(new HttpContextWrapper(this.Context), routeData));
+                    using (var errorController = new ErrorController())
+                    {
+                        var httpContext = new HttpContextWrapper(this.Context);
+                        var routeData = RouteHelper.CreateErrorRoute(status);
+                        var requestContext = new RequestContext(httpContext, routeData);
+                        ((IController)errorController).Execute(requestContext);
+                    }
                 }
             }
         }

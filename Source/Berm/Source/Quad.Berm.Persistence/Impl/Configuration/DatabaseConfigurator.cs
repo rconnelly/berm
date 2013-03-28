@@ -2,7 +2,7 @@
 {
     using System;
     using System.Configuration;
-    using System.Diagnostics.Contracts;
+    using System.Globalization;
 
     using global::Common.Logging;
 
@@ -13,9 +13,9 @@
 
     using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;
     using Microsoft.Practices.EnterpriseLibrary.Data.Configuration;
+    using Microsoft.WindowsAzure.ServiceRuntime;
 
     using NHibernate;
-    using NHibernate.Tool.hbm2ddl;
 
     using Quad.Berm.Data;
     using Quad.Berm.Persistence.Impl.Configuration.Conventions;
@@ -24,7 +24,7 @@
     {
         #region Constants and Fields
 
-        internal const string DefaultDatabaseConnectionName = "Default";
+        internal const string DefaultDatabaseConnectionName = "database";
 
         private string connectionString;
 
@@ -53,20 +53,46 @@
         {
             get
             {
-                var defaultDatabase = DefaultDatabaseConnectionName;
+                string connectionString = null;
                 
-                var configurationSource = ConfigurationSourceFactory.Create();
-                var settings = DatabaseSettings.GetDatabaseSettings(configurationSource);
-                if (settings != null)
+                using (var configurationSource = ConfigurationSourceFactory.Create())
                 {
-                    defaultDatabase = settings.DefaultDatabase;
+                    var connectionName = DefaultDatabaseConnectionName;
+                    var settings = DatabaseSettings.GetDatabaseSettings(configurationSource);
+                    if (settings != null)
+                    {
+                        connectionName = settings.DefaultDatabase;
+                    }
+                    
+                    if (RoleEnvironment.IsAvailable)
+                    {
+                        connectionString =
+                            RoleEnvironment.GetConfigurationSettingValue(
+                                string.Format(CultureInfo.InvariantCulture, "ConnectionString.{0}", connectionName));
+                    }
+
+                    if (connectionString == null)
+                    {
+                        var section = (ConnectionStringsSection)configurationSource.GetSection("connectionStrings");
+                        if (section != null)
+                        {
+                            var css = section.ConnectionStrings[connectionName];
+                            if (css != null)
+                            {
+                                connectionString = css.ConnectionString;
+                            }
+                        }
+                    }
+
+                    if (connectionString == null)
+                    {
+                        throw new ConfigurationErrorsException(
+                            string.Format(
+                                CultureInfo.InvariantCulture, "Connection string [{0}] cannot be found", connectionName));
+                    }
                 }
 
-                var section = (ConnectionStringsSection)configurationSource.GetSection("connectionStrings");
-                Contract.Assert(section != null);
-                var css = section.ConnectionStrings[defaultDatabase];
-                Contract.Assert(css != null);
-                return css.ConnectionString;
+                return connectionString; 
             }
         }
 
@@ -74,29 +100,11 @@
 
         #region Public Methods and Operators
 
-        public virtual void CreateDatabase()
-        {
-            var fluentConfiguration = this.CreateProductionSchema();
-            var configuration = fluentConfiguration.BuildConfiguration();
-
-            new SchemaExport(configuration).Create(false, true);
-        }
-
         public ISessionFactory CreateSessionFactory()
         {
             var configuration = this.CreateProductionSchema();
             var result = configuration.BuildSessionFactory();
             return result;
-        }
-
-        public abstract bool DatabaseExists();
-
-        public void ExportSqlSchema(string file)
-        {
-            var fluentConfiguration = this.CreateProductionSchema();
-            var configuration = fluentConfiguration.BuildConfiguration();
-
-            new SchemaExport(configuration).SetOutputFile(file).Create(true, false);
         }
 
         #endregion

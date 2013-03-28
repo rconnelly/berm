@@ -1,5 +1,6 @@
 namespace Quad.Berm.Mvc.Data
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
 
     public class OperationError
@@ -21,6 +22,7 @@ namespace Quad.Berm.Mvc.Data
 
         public string Message { get; set; }
 
+        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "As Designed")]
         public OperationErrorEntry[] Errors { get; set; }
     }
 }

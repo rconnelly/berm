@@ -9,7 +9,7 @@ namespace Quad.Berm.Mvc
 
     using Microsoft.Practices.ServiceLocation;
 
-    public class CustomControllerFactory<TErrorController> : DefaultControllerFactory
+    public abstract class CustomControllerFactory : DefaultControllerFactory
     {
         #region Constants and Fields
 
@@ -19,7 +19,7 @@ namespace Quad.Berm.Mvc
 
         #region Constructors
 
-        public CustomControllerFactory()
+        protected CustomControllerFactory()
             : base(new CustomControllerActivator())
         {
             this.logger = LogManager.GetCurrentClassLogger();
@@ -43,11 +43,7 @@ namespace Quad.Berm.Mvc
                 {
                     this.logger.Error("Cannot instantiate mvc controller.", exc);
 
-                    controller = base.GetControllerInstance(requestContext, typeof(TErrorController));
-
-                    requestContext.RouteData.Values.Clear();
-
-                    RouteHelper.InitErrorRoute(httpCode, requestContext.RouteData);
+                    controller = this.HandleControllerNotFound(requestContext);
                 }
                 else
                 {
@@ -58,7 +54,11 @@ namespace Quad.Berm.Mvc
             return controller;
         }
 
+        protected abstract IController HandleControllerNotFound(RequestContext requestContext);
+
         #endregion
+
+        #region Nested types
 
         private class CustomControllerActivator : IControllerActivator
         {
@@ -72,5 +72,7 @@ namespace Quad.Berm.Mvc
 
             #endregion
         }
+
+        #endregion
     }
 }

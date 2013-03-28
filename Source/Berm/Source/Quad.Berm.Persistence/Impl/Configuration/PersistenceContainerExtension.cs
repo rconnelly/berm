@@ -2,6 +2,7 @@
 {
     using System;
     using System.Configuration;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
 
@@ -57,6 +58,7 @@
 
         #region Methods
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "As Designed")]
         protected override void Initialize()
         {
             this.Container
@@ -100,28 +102,63 @@
             return sessionFactory;
         }
 
+        private static Type[] CommandToContract(Type commandType)
+        {
+            var query = from t in commandType.GetInterfaces()
+                        let gd = t.IsGenericType ? t.GetGenericTypeDefinition() : null
+                        where gd != null
+                        && (gd == typeof(IQueryCommand<,>) || gd == typeof(IActionCommand<>))
+                        select t;
+            var result = query.ToArray();
+            return result;
+        }
+
+        private static void RegisterSpecification(Type specificationType, IUnityContainer container)
+        {
+            var resulType =
+                specificationType.GetInterfaces()
+                .Single(
+                    t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(ISpecification<>))
+                .GetGenericArguments()
+                .Single();
+            var queryDataType = specificationType;
+            var interfaceType = typeof(IQueryCommand<,>).MakeGenericType(queryDataType, resulType);
+            var commandType = typeof(RelationalSpecificationCommand<>).MakeGenericType(resulType);
+            container.RegisterType(interfaceType, commandType);
+        }
+
+        private static void RegisterRelational(Type entityType, IUnityContainer container)
+        {
+            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonCreateActionData<>).MakeGenericType(entityType)), typeof(RelationalCreateCommand<>).MakeGenericType(entityType));
+            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonUpdateActionData<>).MakeGenericType(entityType)), typeof(RelationalUpdateCommand<>).MakeGenericType(entityType));
+            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonDeleteActionData<>).MakeGenericType(entityType)), typeof(RelationalDeleteCommand<>).MakeGenericType(entityType));
+            container.RegisterType(typeof(IQueryCommand<,>).MakeGenericType(typeof(CommonGetQueryData<>).MakeGenericType(entityType), entityType), typeof(RelationalGetByIdCommand<>).MakeGenericType(entityType));
+            container.RegisterType(typeof(IQueryCommand<,>).MakeGenericType(typeof(CommonLazyGetQueryData<>).MakeGenericType(entityType), entityType), typeof(RelationalLazyGetByIdCommand<>).MakeGenericType(entityType));
+        }
+
         private DatabaseConfigurator CreateDatabaseConfigurator(IUnityContainer container)
         {
-            var currentConnectionName = this.connectionName;
-            var configurationSource = ConfigurationSourceFactory.Create();
-            if (string.IsNullOrEmpty(currentConnectionName))
+            using (var configurationSource = ConfigurationSourceFactory.Create())
             {
-                currentConnectionName = DatabaseConfigurator.DefaultDatabaseConnectionName;
-                var settings = DatabaseSettings.GetDatabaseSettings(configurationSource);
-                if (settings != null)
+                var currentConnectionName = this.connectionName;
+                if (string.IsNullOrEmpty(currentConnectionName))
                 {
-                    currentConnectionName = settings.DefaultDatabase;
+                    currentConnectionName = DatabaseConfigurator.DefaultDatabaseConnectionName;
+                    var settings = DatabaseSettings.GetDatabaseSettings(configurationSource);
+                    if (settings != null)
+                    {
+                        currentConnectionName = settings.DefaultDatabase;
+                    }
                 }
-            }
 
-            var section = (ConnectionStringsSection)configurationSource.GetSection("connectionStrings");
-            Contract.Assert(section != null);
-            var css = section.ConnectionStrings[currentConnectionName];
-            Contract.Assert(css != null);
-            Contract.Assert(!string.IsNullOrEmpty(css.ProviderName));
-            var configurator = container.Resolve<DatabaseConfigurator>(css.ProviderName);
-            configurator.ConnectionString = css.ConnectionString;
-            return configurator;
+                var section = (ConnectionStringsSection)configurationSource.GetSection("connectionStrings");
+                Contract.Assert(section != null);
+                var css = section.ConnectionStrings[currentConnectionName];
+                Contract.Assert(css != null);
+                Contract.Assert(!string.IsNullOrEmpty(css.ProviderName));
+                var configurator = container.Resolve<DatabaseConfigurator>(css.ProviderName);
+                return configurator;
+            }
         }
         
         private ISession CreateSession(IUnityContainer container)
@@ -146,75 +183,45 @@
             this
                 .ConfigureSelfAutoRegistration(typeof(ISpecification<>))
                 .Include(
-                    t => t.IsClass && !t.IsGenericType && !t.IsAbstract && t.Name.EndsWith(WellKnownAppParts.Command),
-                    Then.Register().As(t => this.CommandToContract(t)))
+                    t => t.IsClass && !t.IsGenericType && !t.IsAbstract && t.Name.EndsWith(WellKnownAppParts.Command, StringComparison.Ordinal),
+                    Then.Register().As(t => CommandToContract(t)))
                 .Include(
                     t => t.IsClass && !t.IsGenericType && !t.IsAbstract && t.ImplementsOpenGeneric(typeof(ISpecification<>)),
-                    this.RegisterSpecification)
+                    RegisterSpecification)
                 .Include(
                     t => t.IsClass && !t.IsGenericType && !t.IsAbstract && t.Implements<IIdentified>(),
-                    this.RegisterRelational)
+                    RegisterRelational)
                 .ApplyAutoRegistration();
         }
 
-        private Type[] CommandToContract(Type commandType)
-        {
-            var query = from t in commandType.GetInterfaces()
-                        let gd = t.IsGenericType ? t.GetGenericTypeDefinition() : null
-                        where gd != null
-                        && (gd == typeof(IQueryCommand<,>) || gd == typeof(IActionCommand<>))
-                        select t;
-            var result = query.ToArray();
-            return result;
-        }
-
-        private void RegisterSpecification(Type specificationType, IUnityContainer container)
-        {
-            var resulType =
-                specificationType.GetInterfaces()
-                .Single(
-                    t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(ISpecification<>))
-                .GetGenericArguments()
-                .Single();
-            var queryDataType = specificationType;
-            var interfaceType = typeof(IQueryCommand<,>).MakeGenericType(queryDataType, resulType);
-            var commandType = typeof(RelationalSpecificationCommand<>).MakeGenericType(resulType);
-            container.RegisterType(interfaceType, commandType);
-        }
-
-        private void RegisterRelational(Type entityType, IUnityContainer container)
-        {
-            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonCreateActionData<>).MakeGenericType(entityType)), typeof(RelationalCreateCommand<>).MakeGenericType(entityType));
-            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonUpdateActionData<>).MakeGenericType(entityType)), typeof(RelationalUpdateCommand<>).MakeGenericType(entityType));
-            container.RegisterType(typeof(IActionCommand<>).MakeGenericType(typeof(CommonDeleteActionData<>).MakeGenericType(entityType)), typeof(RelationalDeleteCommand<>).MakeGenericType(entityType));
-            container.RegisterType(typeof(IQueryCommand<,>).MakeGenericType(typeof(CommonGetQueryData<>).MakeGenericType(entityType), entityType), typeof(RelationalGetByIdCommand<>).MakeGenericType(entityType));
-            container.RegisterType(typeof(IQueryCommand<,>).MakeGenericType(typeof(CommonLazyGetQueryData<>).MakeGenericType(entityType), entityType), typeof(RelationalLazyGetByIdCommand<>).MakeGenericType(entityType));
-        }
-
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Practices.EnterpriseLibrary.Common.Configuration.Fluent.IExceptionConfigurationWithMessage.UsingMessage(System.String)", Justification = "As Designed")]
         private void ConfigureExceptionHandling()
         {
-            var configurationSource = new DictionaryConfigurationSource(); 
+            using (var configurationSource = new DictionaryConfigurationSource())
+            {
+                var builder = new ConfigurationSourceBuilder();
+                builder.ConfigureExceptionHandling()
+                       .GivenPolicyWithName(DeletePolicy)
+                       .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
+                       .WrapWith<DeleteConstraintException>()
+                       .UsingMessage("Cannot delete object.")
+                       .ThenThrowNewException()
+                       .ForExceptionType<Exception>()
+                       .ThenNotifyRethrow()
+                       .GivenPolicyWithName(ExecutePolicy)
+                       .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
+                       .WrapWith<DeleteConstraintException>()
+                       .UsingMessage("Cannot delete object.")
+                       .ThenThrowNewException()
+                       .ForExceptionType<Exception>()
+                       .ThenNotifyRethrow();
+                builder.UpdateConfigurationWithReplace(configurationSource);
 
-            var builder = new ConfigurationSourceBuilder();
-            builder.ConfigureExceptionHandling()
-                   .GivenPolicyWithName(DeletePolicy)
-                   .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
-                        .WrapWith<DeleteConstraintException>()
-                        .UsingMessage("Cannot delete object.")
-                        .ThenThrowNewException()
-                    .ForExceptionType<Exception>()
-                        .ThenNotifyRethrow()
-                   .GivenPolicyWithName(ExecutePolicy)
-                   .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
-                        .WrapWith<DeleteConstraintException>()
-                        .UsingMessage("Cannot delete object.")
-                        .ThenThrowNewException()
-                   .ForExceptionType<Exception>()
-                        .ThenNotifyRethrow();
-            builder.UpdateConfigurationWithReplace(configurationSource);
-
-            var configurator = new UnityContainerConfigurator(this.Container);
-            EnterpriseLibraryContainer.ConfigureContainer(configurator, configurationSource);
+                using (var configurator = new UnityContainerConfigurator(this.Container))
+                {
+                    EnterpriseLibraryContainer.ConfigureContainer(configurator, configurationSource);
+                }
+            }
         }
 
         #endregion
