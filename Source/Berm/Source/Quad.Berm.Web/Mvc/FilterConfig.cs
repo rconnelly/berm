@@ -10,8 +10,8 @@
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new WebHandleErrorAttribute { Order = 5 });
-            filters.Add(new AuthorizeAttribute { Order = 10 });
+            filters.Add(new WebHandleErrorAttribute());
+            filters.Add(new AuthorizeAttribute());
         }
 
         #endregion

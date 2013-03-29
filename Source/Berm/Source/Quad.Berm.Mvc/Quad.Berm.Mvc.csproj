@@ -130,6 +130,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -150,19 +151,15 @@
       <Link>Properties\GlobalVersionInfo.cs</Link>
     </Compile>
     <Compile Include="ApiValidationFilterAttribute.cs" />
-    <Compile Include="CacheAttribute.cs" />
     <Compile Include="Configuration\MvcContainerExtension.cs" />
-    <Compile Include="CustomControllerFactory.cs" />
+    <Compile Include="Security\CustomClaimsAuthenticationManager.cs" />
+    <Compile Include="Security\CustomClaimsAuthorizationManager.cs" />
+    <Compile Include="ServiceLocatorControllerActivator.cs" />
     <Compile Include="Data\ExceptionExtender.cs" />
     <Compile Include="Data\OperationError.cs" />
     <Compile Include="Data\OperationErrorEntry.cs" />
     <Compile Include="Data\OperationErrorExtender.cs" />
-    <Compile Include="Data\PrincipalSession.cs" />
-    <Compile Include="Data\PrincipalSessionExtender.cs" />
-    <Compile Include="NoCacheAttribute.cs" />
-    <Compile Include="PrincipalRightPermissionAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Redirect401AuthorizeAttribute.cs" />
     <Compile Include="WebHandleErrorAttribute.cs" />
     <Compile Include="WebValidationFilterAttribute.cs" />
   </ItemGroup>

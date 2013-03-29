@@ -1,51 +1,21 @@
 ﻿namespace Quad.Berm.Web.Areas.Main.Controllers
 {
+    using System;
+    using System.IdentityModel.Services;
+    using System.Net;
+    using System.Security.Permissions;
     using System.Web.Mvc;
 
     using Microsoft.Practices.Unity;
-
-    using Quad.Berm.Mvc;
-    using Quad.Berm.Web.Areas.Main.Models;
 
     public class HomeController : Controller
     {
         [Dependency]
         public HomeManager Manager { get; set; }
 
-        [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
-        {
-            this.ViewBag.ReturnUrl = returnUrl;
-
-            return this.View();
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#"), HttpPost]
-        [AllowAnonymous]
-        [WebValidationFilter]
-        public ActionResult Login(LoginModel model, string returnUrl)
-        {
-            if (this.ModelState.IsValid)
-            {
-                if (this.Manager.Login(model))
-                {
-                    if (this.Url.IsLocalUrl(returnUrl))
-                    {
-                        return this.Redirect(returnUrl);
-                    }
-
-                    return this.RedirectToAction("Index", "Home");
-                }
-
-                this.ModelState.AddModelError(string.Empty, "The user name or password provided is incorrect.");
-            }
-
-            return this.View(model);
-        }
-
         public ActionResult LogOff()
         {
-            this.Manager.Logout();
+            this.Manager.SignOut();
 
             return this.RedirectToAction("Index", "Home");
         }
@@ -53,6 +23,29 @@
         public ActionResult Index()
         {
             return this.View();
+        }
+
+        public ActionResult UnhandledError()
+        {
+            throw new Exception("bla-la");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult Unauthorized()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [PrincipalPermission(SecurityAction.Demand, Role = "Admin")]
+        public ActionResult Principal()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [ClaimsPrincipalPermission(SecurityAction.Demand, Resource = "resource1", Operation = "action1")]
+        public ActionResult Claims()
+        {
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
     }
 }

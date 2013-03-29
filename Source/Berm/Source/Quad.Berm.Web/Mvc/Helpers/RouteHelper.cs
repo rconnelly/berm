@@ -5,7 +5,6 @@ namespace Quad.Berm.Web.Mvc.Helpers
 
     public static class RouteHelper
     {
-        public const string LogOn = "Login";
         public const string Root = "Root";
         public const string Error404 = "Error404";
         public const string Error403 = "Error403";

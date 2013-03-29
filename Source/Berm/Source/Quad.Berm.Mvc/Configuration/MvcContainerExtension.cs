@@ -7,6 +7,9 @@
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
+    using System.Net;
+    using System.Security;
+    using System.Web;
     using System.Web.Mvc;
     using System.Web.Mvc.Async;
 
@@ -21,7 +24,7 @@
     using Quad.Berm.Common.Unity;
     using Quad.Berm.Initialization.Configuration;
 
-    public abstract class MvcContainerExtension : InitializationContainerExtension
+    public class MvcContainerExtension : InitializationContainerExtension
     {
         #region Fields
 
@@ -41,18 +44,17 @@
             base.Initialize();
 
             this.Container.RegisterType<IAsyncActionInvoker, AsyncControllerActionInvoker>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<IViewPageActivator>(new ContainerControlledLifetimeManager(), new InjectionFactory(c => null));
-            this.Container.RegisterType<ITempDataProvider, SessionStateTempDataProvider>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IControllerFactory, DefaultControllerFactory>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IControllerActivator, ServiceLocatorControllerActivator>(new ContainerControlledLifetimeManager());
             this.Container.RegisterType<ModelMetadataProvider, CachedDataAnnotationsModelMetadataProvider>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType(typeof(IControllerFactory), new ContainerControlledLifetimeManager(), new InjectionFactory(c => this.CreateControllerFactory()));
+            this.Container.RegisterType<ITempDataProvider, SessionStateTempDataProvider>(new ContainerControlledLifetimeManager());
+            this.Container.RegisterType<IViewPageActivator>(new ContainerControlledLifetimeManager(), new InjectionFactory(c => null));
             this.Container.RegisterType<AmbientContextLifetimeStore, AmbientContextLifetimeHttpContextStore>(new ContainerControlledLifetimeManager());
 
             this.ConfigureExceptionHandling();
 
             DependencyResolver.SetResolver(ServiceLocator.Current);
         }
-
-        protected abstract IControllerFactory CreateControllerFactory();
 
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Practices.EnterpriseLibrary.Common.Configuration.Fluent.IExceptionConfigurationWithMessage.UsingMessage(System.String)", Justification = "As Designed")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "handlingInstanceID", Justification = "As Designed")]
@@ -63,50 +65,56 @@
                 var builder = new ConfigurationSourceBuilder();
                 builder.ConfigureExceptionHandling()
                        .GivenPolicyWithName(WebValidationPolicy)
-                       .ForExceptionType<DeleteConstraintException>()
-                       .HandleCustom<BusinessValidationHandler>()
-                       .ThenThrowNewException()
-                       .ForExceptionType<BusinessValidationException>()
-                       .ThenNotifyRethrow()
-                       .ForExceptionType<BusinessException>()
-                       .HandleCustom<BusinessValidationHandler>()
-                       .ThenThrowNewException()
+                            .ForExceptionType<DeleteConstraintException>()
+                                .HandleCustom<BusinessValidationHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<BusinessValidationException>()
+                                .ThenNotifyRethrow()
+                            .ForExceptionType<BusinessException>()
+                                .HandleCustom<BusinessValidationHandler>()
+                                .ThenThrowNewException()
                        .GivenPolicyWithName(ApiValidationPolicy)
-                       .ForExceptionType<DeleteConstraintException>()
-                       .HandleCustom<BusinessValidationHandler>()
-                       .ThenThrowNewException()
-                       .ForExceptionType<BusinessValidationException>()
-                       .ThenNotifyRethrow()
-                       .ForExceptionType<BusinessException>()
-                       .HandleCustom<BusinessValidationHandler>()
-                       .ThenThrowNewException()
-                       .ForExceptionType<Exception>()
-                       .LogToCategory("General")
-                       .WithSeverity(TraceEventType.Critical)
-                       .UsingExceptionFormatter<TextExceptionFormatter>()
-                       .HandleCustom(
-                           typeof(WrapHandler<Exception>),
-                           new NameValueCollection
-                               {
-                                   {
-                                       WrapHandler<BusinessValidationException>.MessageKey,
-                                       "An error has occurred while consuming this service. Please contact your administrator for more information."
-                                   },
-                                   {
-                                       WrapHandler<BusinessValidationException>.AppendHandlingIdKey,
-                                       bool.TrueString
-                                   }
-                               })
-                       .ThenThrowNewException()
+                            .ForExceptionType<DeleteConstraintException>()
+                                .HandleCustom<BusinessValidationHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<BusinessValidationException>()
+                                .ThenNotifyRethrow()
+                            .ForExceptionType<BusinessException>()
+                                .HandleCustom<BusinessValidationHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<Exception>()
+                                .LogToCategory("General")
+                                    .WithSeverity(TraceEventType.Critical)
+                                    .UsingExceptionFormatter<TextExceptionFormatter>()
+                                    .HandleCustom(
+                                       typeof(WrapHandler<Exception>),
+                                       new NameValueCollection
+                                           {
+                                               {
+                                                   WrapHandler<BusinessValidationException>.MessageKey,
+                                                   "An error has occurred while consuming this service. Please contact your administrator for more information."
+                                               },
+                                               {
+                                                   WrapHandler<BusinessValidationException>.AppendHandlingIdKey,
+                                                   bool.TrueString
+                                               }
+                                           })
+                                    .ThenThrowNewException()
                        .GivenPolicyWithName(DefaultPolicy)
-                       .ForExceptionType<Exception>()
-                       .LogToCategory("General")
-                       .WithSeverity(TraceEventType.Critical)
-                       .UsingExceptionFormatter<TextExceptionFormatter>()
-                       .WrapWith<Exception>()
-                       .UsingMessage(
-                           "An error has occurred while processing request. Please contact your administrator for more information. [Error ID: {handlingInstanceID}]")
-                       .ThenThrowNewException();
+                            .ForExceptionType<HttpException>()
+                                .ThenNotifyRethrow()
+                            .ForExceptionType<SecurityException>()
+                                .WrapWith<HttpException>()
+                                    .HandleCustom<UnautorizedHttpExceptionHandler>()
+                                    .ThenThrowNewException()
+                            .ForExceptionType<Exception>()
+                                .LogToCategory("General")
+                                .WithSeverity(TraceEventType.Critical)
+                                .UsingExceptionFormatter<TextExceptionFormatter>()
+                                .WrapWith<Exception>()
+                                .UsingMessage(
+                                    "An error has occurred while processing request. Please contact your administrator for more information. [Error ID: {handlingInstanceID}]")
+                                .ThenThrowNewException();
                 builder.UpdateConfigurationWithReplace(configurationSource);
 
                 using (var configurator = new UnityContainerConfigurator(this.Container))
@@ -165,7 +173,7 @@
                         "{0}. [Error ID: {{handlingInstanceID}}]",
                         pattern.Trim(' ', '.'));
                 }
-
+                
                 var error = ExceptionUtility.FormatExceptionMessage(pattern, handlingInstanceId);
                 return error;
             }
@@ -178,6 +186,20 @@
             }
         }
 
+        internal class UnautorizedHttpExceptionHandler : IExceptionHandler
+        {
+            public UnautorizedHttpExceptionHandler(NameValueCollection collection)
+            {
+                Contract.Assert(collection != null);
+            }
+
+            public Exception HandleException(Exception exception, Guid handlingInstanceId)
+            {
+                var error = new HttpException((int)HttpStatusCode.Unauthorized, "You are not authorized to perform operation");
+                return error;
+            }
+        }
+        
         // ReSharper restore UnusedParameter.Local
         #endregion
     }

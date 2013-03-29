@@ -1,25 +1,31 @@
 ﻿namespace Quad.Berm.Web.Areas.Main.Controllers
 {
-    using System.Web.Security;
-
-    using Quad.Berm.Web.Areas.Main.Models;
+    using System;
+    using System.Configuration;
+    using System.IdentityModel.Services;
+    using System.Linq;
 
     public class HomeManager
     {
-        public bool Login(LoginModel model)
+        public void SignOut()
         {
-            var authenticated = string.Equals(model.UserName, model.Password);
-            if (authenticated)
-            {
-                FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-            }
+            // Load Identity Configuration
+            var config = FederatedAuthentication.FederationConfiguration;
 
-            return authenticated;
-        }
+            // Get wtrealm from WsFederationConfiguation Section
+            var wtrealm = config.WsFederationConfiguration.Realm;
 
-        public void Logout()
-        {
-            FormsAuthentication.SignOut();
+            // Construct wreply value from wtrealm
+            var wreply = wtrealm.Last().Equals('/') ? wtrealm + "Logout" : wtrealm + "/Logout";
+
+            // Read the ACS Ws-Federation endpoint from web.Config
+            var endpoint = ConfigurationManager.AppSettings["ida:Issuer"];
+
+            var signoutRequestMessage = new SignOutRequestMessage(new Uri(endpoint));
+            signoutRequestMessage.Parameters.Add("wreply", wreply);
+            signoutRequestMessage.Parameters.Add("wtrealm", wtrealm);
+
+            FederatedAuthentication.SessionAuthenticationModule.SignOut();
         }
     }
 }

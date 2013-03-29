@@ -4,28 +4,22 @@
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
-    using System.Runtime.Caching;
-    using System.Security.Principal;
     using System.Web;
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
-    using System.Web.Security;
 
-    using global::Common.Logging;
-
-    using Microsoft.Practices.ServiceLocation;
+    using Microsoft.WindowsAzure.Diagnostics;
+    using Microsoft.WindowsAzure.ServiceRuntime;
 
     using Newtonsoft.Json.Serialization;
 
-    using Quad.Berm.Common.Security;
+    using Quad.Berm.Common.Exceptions;
     using Quad.Berm.Common.Unity;
-    using Quad.Berm.Mvc.Data;
+    using Quad.Berm.Mvc.Configuration;
     using Quad.Berm.Web.Areas.Main.Controllers;
     using Quad.Berm.Web.Mvc;
-    using Quad.Berm.Web.Mvc.Configuration;
     using Quad.Berm.Web.Mvc.Helpers;
 
     public class MvcApplication : HttpApplication
@@ -34,8 +28,6 @@
 
         private const string AmbientContextKey = "ac";
 
-        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
-
         #endregion
 
         #region Methods
@@ -43,7 +35,14 @@
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "As Designed")]
         protected void Application_Start()
         {
-            Shell.Start<WebContainerExtension>();
+            // DiagnosticMonitorTraceListener should be added before any other actions
+            // to log all necessary info to azure log table
+            if (RoleEnvironment.IsAvailable)
+            {
+                Trace.Listeners.Add(new DiagnosticMonitorTraceListener());
+            }
+
+            Shell.Start<MvcContainerExtension>();
 
             AreaRegistration.RegisterAllAreas();
 
@@ -51,7 +50,6 @@
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            // ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
             MvcHandler.DisableMvcResponseHeader = true;
             
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -62,17 +60,16 @@
             this.Context.Items.Add(AmbientContextKey, new AmbientContext());
         }
 
-        protected void Application_AuthenticateRequest(object sender, EventArgs e)
-        {
-            return;
-            this.Context.User = GetPrincipal();
-        }
-
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            var uow = (AmbientContext)this.Context.Items[AmbientContextKey];
-            Contract.Assert(uow != null);
-            uow.Dispose();
+            if (StatusHasErrorPage(this.Response.StatusCode))
+            {
+                this.ShowErrorPage(this.Response.StatusCode);
+            }
+
+            var context = (AmbientContext)this.Context.Items[AmbientContextKey];
+            Contract.Assert(context != null);
+            context.Dispose();
             this.Context.Items.Remove(AmbientContextKey);
         }
 
@@ -80,20 +77,21 @@
         protected void Application_Error()
         {
             var error = this.Server.GetLastError();
-            try
-            {
-                Log.ErrorFormat(
-                    CultureInfo.InvariantCulture, 
-                    "Server error has been occured while processing page: {0} ", 
-                    error,
-                    HttpContext.Current != null ? HttpContext.Current.Request.Url.ToString() : "unknown");
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.Message);
-            }
+            var transformException = error.TransformException(MvcContainerExtension.DefaultPolicy);
+            var httpException = transformException as HttpException;
 
-            this.HandleCustomErrors(error);
+            if (httpException != null)
+            {
+                var status = httpException.GetHttpCode();
+
+                if (StatusHasErrorPage(status))
+                {
+                    // Clear the error on server.
+                    this.Server.ClearError();
+
+                    this.ShowErrorPage(status);
+                }
+            }
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "As Designed")]
@@ -102,70 +100,32 @@
             Shell.Shutdown();
         }
 
-        private static IPrincipal GetPrincipal()
+        private static bool StatusHasErrorPage(int status)
         {
-            IPrincipal principal = ApplicationPrincipal.Anonymous;
-            var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
-            if (authCookie != null)
-            {
-                var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
-                if (authTicket != null && !authTicket.Expired)
-                {
-                    var login = authTicket.Name;
-                    var cache = ServiceLocator.Current.GetInstance<ObjectCache>();
-
-                    var session = cache.Get(login) as PrincipalSession;
-                    if (session == null)
-                    {
-                        throw new NotImplementedException();
-                        /*var manager = ServiceLocator.Current.GetInstance<IUserManager>();
-                        var user = manager.FindByLogin(login);
-
-                        if (user != null && user.UserPasswordCredential != null)
-                        {
-                            session = user.Convert();
-                            cache.Add(
-                                login, 
-                                session, 
-                                new CacheItemPolicy { SlidingExpiration = new TimeSpan(0, 0, 60) });
-                        }*/
-                    }
-
-                    if (session != null)
-                    {
-                        principal = session.Convert();
-                    }
-                }
-            }
-
-            return principal;
+            return status == 404 || status == 403 || status == 401;
         }
 
-        private void HandleCustomErrors(Exception exception)
+        private void ShowErrorPage(int status)
         {
-            var httpException = exception as HttpException;
+            const string Key = "shown";
 
-            if (httpException != null)
+            if (!this.Context.Items.Contains(Key))
             {
-                var status = httpException.GetHttpCode();
+                this.Response.Clear();
+                this.Response.StatusCode = status;
 
-                if (status == 404 || status == 403 || status == 401)
+                // Avoid IIS7 getting in the middle
+                this.Response.TrySkipIisCustomErrors = true;
+
+                using (var errorController = new ErrorController())
                 {
-                    // Clear the error on server.
-                    this.Server.ClearError();
-
-                    // Avoid IIS7 getting in the middle
-                    this.Response.StatusCode = status;
-                    this.Response.TrySkipIisCustomErrors = true;
-
-                    using (var errorController = new ErrorController())
-                    {
-                        var httpContext = new HttpContextWrapper(this.Context);
-                        var routeData = RouteHelper.CreateErrorRoute(status);
-                        var requestContext = new RequestContext(httpContext, routeData);
-                        ((IController)errorController).Execute(requestContext);
-                    }
+                    var httpContext = new HttpContextWrapper(this.Context);
+                    var routeData = RouteHelper.CreateErrorRoute(status);
+                    var requestContext = new RequestContext(httpContext, routeData);
+                    ((IController)errorController).Execute(requestContext);
                 }
+
+                this.Context.Items.Add(Key, 1);
             }
         }
 
