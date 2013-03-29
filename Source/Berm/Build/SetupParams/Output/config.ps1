@@ -23,5 +23,5 @@ $migratorPath = "$rootpath\Database"
 $deploymentPackage = "$contentPath\Quad.Berm.Cloud.cspkg"
 $deploymentPackageConfig = "$contentPath\ServiceConfiguration.${Azure_profile}.cscfg"
 $defaultDatabaseMigratorAssembly = "$migratorPath\Quad.Berm.Migrations.dll";
-$defaultCertificatePath = "$contentPath\certificate\berm.azure.v2.pfx"
+$defaultCertificatePath = "$contentPath\certificate\berm.azure.pfx"
 $defaultCertificatePassword = "1"

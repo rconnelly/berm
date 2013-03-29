@@ -1,7 +1,7 @@
 Configure remote azure environment
 	1. create subscription
 		1.1 goto "Build\SetupParams\Output\Cloud\certificate"
-		1.2 import "berm.azure.v2.cer" to cloud -> settings  
+		1.2 import "berm.azure.cer" to cloud -> settings  
 
 Prepare development environment
 	1. download and install Windows Azure SDK for VS2012
@@ -11,7 +11,7 @@ Prepare development environment
 		3.2 "Tools\WindowsAzureTools.vs110.exe"
 	4. import certificate
 		6.1 goto "Build\SetupParams\Output\Cloud\certificate"
-		6.2 import "berm.azure.v2.pfx" into CurrentUser Personal Location
+		6.2 import "berm.azure.pfx" into CurrentUser Personal Location
 
 Install application
 	1. build application by running "Build\Build.Local.cmd"
