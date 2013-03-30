@@ -64,7 +64,7 @@
         {
             if (StatusHasErrorPage(this.Response.StatusCode))
             {
-                this.ShowErrorPage(this.Response.StatusCode);
+                this.ShowSpecialErrorPage(this.Response.StatusCode);
             }
 
             var context = (AmbientContext)this.Context.Items[AmbientContextKey];
@@ -80,17 +80,13 @@
             var transformException = error.TransformException(MvcContainerExtension.DefaultPolicy);
             var httpException = transformException as HttpException;
 
-            if (httpException != null)
+            if (httpException != null && StatusHasErrorPage(httpException.GetHttpCode()))
             {
-                var status = httpException.GetHttpCode();
-
-                if (StatusHasErrorPage(status))
-                {
-                    // Clear the error on server.
-                    this.Server.ClearError();
-
-                    this.ShowErrorPage(status);
-                }
+                this.ShowSpecialErrorPage(httpException.GetHttpCode());
+            }
+            else if (this.Context.IsCustomErrorEnabled)
+            {
+                this.ShowUnhandledErrorPage(transformException);
             }
         }
 
@@ -102,30 +98,67 @@
 
         private static bool StatusHasErrorPage(int status)
         {
-            return status == 404 || status == 403 || status == 401;
+            // want to status != 500 be implicitly present here
+            return (status != 500) && (status == 404 || status == 403 || status == 401);
         }
 
-        private void ShowErrorPage(int status)
+        private void ShowSpecialErrorPage(int status)
         {
             const string Key = "shown";
 
             if (!this.Context.Items.Contains(Key))
             {
-                this.Response.Clear();
-                this.Response.StatusCode = status;
-
-                // Avoid IIS7 getting in the middle
-                this.Response.TrySkipIisCustomErrors = true;
-
-                using (var errorController = new ErrorController())
-                {
-                    var httpContext = new HttpContextWrapper(this.Context);
-                    var routeData = RouteHelper.CreateErrorRoute(status);
-                    var requestContext = new RequestContext(httpContext, routeData);
-                    ((IController)errorController).Execute(requestContext);
-                }
+                this.ShowErrorPage(
+                    status,
+                    (controller, context, routeData) =>
+                    {
+                        var requestContext = new RequestContext(context, routeData);
+                        ((IController)controller).Execute(requestContext);
+                    });
 
                 this.Context.Items.Add(Key, 1);
+            }
+        }
+
+        private void ShowUnhandledErrorPage(Exception transformException)
+        {
+            // it is small duplication with WebHandleErrorAttribute. 
+            // the only difference WebHandleErrorAttribute knows controller and action for sure,
+            // while here we will use "undefined"
+            this.ShowErrorPage(
+                500, 
+                (controller, context, routeData) =>
+                {
+                    // ReSharper disable Mvc.ControllerNotResolved
+                    // ReSharper disable Mvc.ActionNotResolved
+                    var model = new HandleErrorInfo(transformException, "undefined", "undefined");
+                    // ReSharper restore Mvc.ActionNotResolved
+                    // ReSharper restore Mvc.ControllerNotResolved
+                    var vr = new ViewResult
+                                 {
+                                     ViewName = "Error", 
+                                     ViewData = new ViewDataDictionary(model)
+                                 };
+                    var controllerContext = new ControllerContext(context, routeData, controller);
+                    vr.ExecuteResult(controllerContext);
+                });
+        }
+
+        private void ShowErrorPage(int status, Action<ControllerBase, HttpContextBase, RouteData> fill)
+        {
+            this.Server.ClearError();
+            this.Response.Clear();
+            this.Response.StatusCode = status;
+
+            // Avoid IIS7 getting in the middle
+            this.Response.TrySkipIisCustomErrors = true;
+
+            using (var errorController = new ErrorController())
+            {
+                var httpContext = new HttpContextWrapper(this.Context);
+                var routeData = RouteHelper.CreateErrorRoute(status);
+                
+                fill(errorController, httpContext, routeData);
             }
         }
 

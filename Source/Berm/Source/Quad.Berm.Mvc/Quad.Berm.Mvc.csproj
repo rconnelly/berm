@@ -131,6 +131,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.identitymodel.services" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -152,6 +153,7 @@
     </Compile>
     <Compile Include="ApiValidationFilterAttribute.cs" />
     <Compile Include="Configuration\MvcContainerExtension.cs" />
+    <Compile Include="FakeServerHeaderModule.cs" />
     <Compile Include="Security\CustomClaimsAuthenticationManager.cs" />
     <Compile Include="Security\CustomClaimsAuthorizationManager.cs" />
     <Compile Include="ServiceLocatorControllerActivator.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebHandleErrorAttribute.cs" />
     <Compile Include="WebValidationFilterAttribute.cs" />
+    <Compile Include="WSFedRequestValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">
