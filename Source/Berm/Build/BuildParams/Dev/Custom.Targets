@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <PerformVersionActualization>true</PerformVersionActualization>
+        <PerformVersionPropagation>true</PerformVersionPropagation>
+        <PerformCleanBeforeBuild>true</PerformCleanBeforeBuild>
+        <PerformUnitTestPrepare>false</PerformUnitTestPrepare>
+        <PerformUnitTesting>false</PerformUnitTesting>
+        <PerformCodeAnalysis>true</PerformCodeAnalysis>
+        <PerformArchive>false</PerformArchive>
+        <PerformDeploy>true</PerformDeploy>
+        <PerformBuildIncrement>false</PerformBuildIncrement>
+        <ResetChangesAfterBuild>true</ResetChangesAfterBuild>
+    </PropertyGroup>
+</Project>

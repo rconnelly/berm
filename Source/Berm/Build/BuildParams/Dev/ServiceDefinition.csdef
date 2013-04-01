@@ -1,0 +1,3 @@
+﻿<ServiceDefinition xmlns:sdf="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" xmlns:xmu="urn:msbuildcommunitytasks-xmlmassupdate">
+    <sdf:WebRole name="Web" vmsize="ExtraSmall" xmu:key="name" />
+</ServiceDefinition>

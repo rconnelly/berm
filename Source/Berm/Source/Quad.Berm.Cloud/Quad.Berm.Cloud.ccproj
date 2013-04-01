@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>1.8</ProductVersion>
+    <ProjectGuid>353682a6-30aa-467c-9466-706ff289fc11</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Quad.Berm.Cloud</RootNamespace>
+    <AssemblyName>Quad.Berm.Cloud</AssemblyName>
+    <StartDevelopmentStorage>True</StartDevelopmentStorage>
+    <Name>Quad.Berm.Cloud</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <!-- Items for the project -->
+  <ItemGroup>
+    <ServiceDefinition Include="ServiceDefinition.csdef" />
+    <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
+    <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Quad.Berm.Web\Quad.Berm.Web.csproj">
+      <Name>Web</Name>
+      <Project>{6e5c092c-b010-4f67-ac7b-96a1a54ddbb9}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>Web</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- Import the target files for this project template -->
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' == '10.0' ">11.0</VisualStudioVersion>
+    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\1.8\</CloudExtensionsDir>
+  </PropertyGroup>
+  <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
+  <PropertyGroup>
+    <CollectRoleFilesDependsOn>
+        $(CollectRoleFilesDependsOn)
+        CollectExtraWorkerRoleFiles;
+    </CollectRoleFilesDependsOn>
+  </PropertyGroup>
+  <Target Name="CollectExtraWorkerRoleFiles" Outputs="%(WorkerRoleProjects.Identity)" Condition="'@(WorkerRoleProjects)' != ''">
+    <PropertyGroup>
+      <_WorkerRoleProject>%(WorkerRoleProjects.Identity)</_WorkerRoleProject>
+      <_WorkerRoleProjectName>%(WorkerRoleProjects.Name)</_WorkerRoleProjectName>
+      <_WorkerRoleConfiguration>%(WorkerRoleProjects.Configuration)</_WorkerRoleConfiguration>
+      <_WorkerRolePlatform>%(WorkerRoleProjects.Platform)</_WorkerRolePlatform>
+    </PropertyGroup>
+    <Message Text="WorkerRoleProject=$(_WorkerRoleProject)" />
+    <Message Text="WorkerRoleProjectName=$(_WorkerRoleProjectName)" />
+    <Message Text="WorkerRoleConfiguration=$(_WorkerRoleConfiguration)" />
+    <Message Text="WorkerRolePlatform=$(_WorkerRolePlatform)" />
+    <PropertyGroup>
+      <!-- If the role configuration wasn't passed, use the current cloud service project configuration -->
+      <_WorkerRoleConfiguration Condition="'$(_WorkerRoleConfiguration)' == ''">$(Configuration)</_WorkerRoleConfiguration>
+      <!-- If the role platform wasn't passed, use the current cloud service project platform -->
+      <_WorkerRolePlatform Condition="'$(_WorkerRolePlatform)' == ''">$(Platform)</_WorkerRolePlatform>
+    </PropertyGroup>
+    <!-- Setup the intermediate path where we want to publish the worker role -->
+    <ItemGroup>
+      <IntermediateWorkerOutputPathItem Include="$(IntermediateOutputPath)$(_WorkerRoleProjectName)\" />
+    </ItemGroup>
+    <PropertyGroup>
+      <IntermediateWorkerOutputPath>@(IntermediateWorkerOutputPathItem->'%(Fullpath)')</IntermediateWorkerOutputPath>
+    </PropertyGroup>
+    <!-- ===============================
+         Get the target path for the role 
+         =============================== -->
+    <MSBuild Projects="$(_WorkerRoleProject)" Targets="GetTargetPath" ContinueOnError="false" Properties="Configuration=$(_WorkerRoleConfiguration);Platform=$(_WorkerRolePlatform)">
+      <Output TaskParameter="TargetOutputs" ItemName="WorkerTargetPathItem" />
+    </MSBuild>
+    <PropertyGroup>
+      <!-- Stores the worker target directory -->
+      <WorkerTargetDir Condition="'@(WorkerTargetPathItem)'!=''">%(RootDir)%(Directory)</WorkerTargetDir>
+      <!-- Stores the assembly file name (no path) of the worker role -->
+      <WorkerEntryPoint Condition="'@(WorkerTargetPathItem)'!=''">%(Filename)%(Extension)</WorkerEntryPoint>
+    </PropertyGroup>
+    <Message Text="WorkerTargetDir = $(WorkerTargetDir)" />
+    <Message Text="WorkerEntryPoint = $(WorkerEntryPoint)" />
+    <!-- Add the app config file from bin/(Release|Debug)/<app>.config -->
+    <ItemGroup>
+      <WorkerFiles Include="$(WorkerTargetDir)$(WorkerEntryPoint).config" Condition="Exists('$(WorkerTargetDir)$(WorkerEntryPoint).config')">
+        <TargetPath>$(WorkerEntryPoint).config</TargetPath>
+        <RoleOwner>$(_WorkerRoleProject)</RoleOwner>
+        <RoleOwnerName>$(_WorkerRoleProjectName)</RoleOwnerName>
+      </WorkerFiles>
+    </ItemGroup>
+  </Target>
+</Project>

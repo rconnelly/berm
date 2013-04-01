@@ -1,0 +1,58 @@
+﻿@using Quad.Berm.Web.Mvc.Helpers
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>@ViewBag.Title - Quad.Berm</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        @Styles.Render("~/styles/general")
+        @RenderSection("styles", false)
+        @Scripts.Render("~/scripts/modernizr")
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    @if (Request.IsAuthenticated)
+                    {
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand" href="@Url.RouteUrl(new { area = "Main", controller = "Home", action = "Index" })">Quad.Berm<sup>@Html.ApplicationVersion()</sup></a>
+                        @Html.Partial("_LoginPartial")
+                        <div class="nav-collapse">
+                            <ul class="nav">
+                                <li @Html.ActiveItem("Home", "Index")>@Html.ActionLink("Home", "Index", "Home", new { area = "Main" }, null)</li>
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    }
+                    else
+                    {
+                        <a class="brand" href="#">Quad.Berm<sup>@Html.ApplicationVersion()</sup></a>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            @RenderBody()
+            <hr>
+            <footer>
+                <div class="pull-right">
+                    <a class="brand" href="http://quad.io">
+                        <img src="~/img/header_logo.png" alt="Quad.IO" />
+                    </a>
+                </div>
+                <p>&copy; Copyright 2013, Quad IO, Inc.</p>
+            </footer>
+        </div><!--/.container-->        
+       
+        @Scripts.Render("~/scripts/general")
+        @RenderSection("scripts", false)
+    </body>
+</html>

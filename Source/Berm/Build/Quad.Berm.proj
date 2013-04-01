@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <ProductName>Quad.Berm</ProductName>
+        <Platform>Any CPU</Platform>
+    </PropertyGroup>
+
+    <Import Project="Common.Build.Targets" />
+
+    <ItemGroup>
+        <CompileProjectList
+            Include="$(SolutionRoot)\Quad.Berm.sln" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <BeforePackSubstitutionFiles Include="ServiceDefinition.csdef">
+            <ContentFile>Quad.Berm.Cloud\ServiceDefinition.csdef</ContentFile>
+            <NamespaceDefinitions>sdf=http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition</NamespaceDefinitions>
+            <ContentRoot>/sdf:ServiceDefinition</ContentRoot>
+            <SubstitutionsRoot>/ServiceDefinition</SubstitutionsRoot>
+        </BeforePackSubstitutionFiles>
+        <AfterPackSubstitutionFiles Include="ServiceConfiguration.Cloud.cscfg">
+            <ContentFile>Cloud\ServiceConfiguration.Cloud.cscfg</ContentFile>
+            <NamespaceDefinitions>scf=http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration</NamespaceDefinitions>
+            <ContentRoot>/scf:ServiceConfiguration</ContentRoot>
+            <SubstitutionsRoot>/ServiceConfiguration</SubstitutionsRoot>
+        </AfterPackSubstitutionFiles>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectToPublish Include="Quad.Berm.Cloud\Quad.Berm.Cloud.ccproj">
+            <TargetProfile>$(CloudTargetProfile)</TargetProfile>
+            <Path>Cloud</Path>
+        </ProjectToPublish>
+        <FileToPublish Include="Quad.Berm.Migrations\bin\Migrate.exe;
+                                Quad.Berm.Migrations\bin\Migrate.exe.config;
+                                Quad.Berm.Migrations\bin\FluentMigrator.Runner.dll;
+                                Quad.Berm.Migrations\bin\FluentMigrator.dll;
+                                Quad.Berm.Migrations\bin\Quad.Berm.Migrations.dll;">
+            <Path>Database</Path>
+        </FileToPublish>
+        <FileToPublish Include="..\Tools\Azure\WindowsAzurePowerShell.3f.3f.3fnew.exe;
+                                ..\Tools\Azure\WindowsAzureTools.vs110.exe;
+                                ..\Tools\Azure\WindowsAzureAuthoringTools-x64.msi;
+                                ..\Tools\Azure\WindowsAzureAuthoringTools-x86.msi">
+            <Path>Tools</Path>
+        </FileToPublish>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <CommonCodeAnalysisRuleFiles Include="$(ProjectRoot)\Common\Rules.ruleset" />
+    </ItemGroup>
+
+    <!--///////////////////////////Target PrepareGroups///////////////////////////////////////////////////////////////////-->
+    <Target Name="PrepareGroups">
+        <GetSolutionProjects Solution="%(CompileProjectList.Fullpath)">
+            <Output ItemName="SolutionItems" TaskParameter="Output"/>
+        </GetSolutionProjects>
+        
+        <ItemGroup>
+            <SolutionProjects Include="@(SolutionItems)" Condition="%(Extension) == '.csproj'"/>  
+            
+            <CodeQualityProjectList
+                Include="@(SolutionProjects)"
+                Exclude="$(SolutionRoot)\**\*Test*.csproj;
+                         $(SolutionRoot)\**\**\*Test*.csproj;"/>
+            
+            <StyleCopCodeQualityProjectList
+                Include="@(CodeQualityProjectList)" />
+
+            <SimianCodeQualityProjectList
+                Include="@(CodeQualityProjectList)" />
+
+            <FxCopCodeQualityProjectList1
+                Include="@(CodeQualityProjectList)" />
+            
+            <FxCopCodeQualityProjectGroup Include="4.0">
+                <Items>@(FxCopCodeQualityProjectList1)</Items>
+            </FxCopCodeQualityProjectGroup>
+
+            <TestProjectList
+                Include="$(SolutionRoot)\**\*Test*.csproj;
+                         $(SolutionRoot)\**\*Test*.csproj" />
+                
+        </ItemGroup>
+
+    </Target>
+    <!--///////////////////////////End Target PrepareGroups///////////////////////////////////////////////////////////////////-->
+
+
+    <!--///////////////////////////Target Default///////////////////////////////////////////////////////////////////-->
+    <Target Name="Default" DependsOnTargets="PrepareGroups;Main" />
+    <!--///////////////////////////End Target Default///////////////////////////////////////////////////////////////-->
+
+    <!--///////////////////////////Targets CodeAnalysis///////////////////////////////////////////////////////////////////-->
+    <Target Name="ForceCodeAnalysis">
+        <PropertyGroup>
+            <PerformCodeAnalysis>true</PerformCodeAnalysis>
+        </PropertyGroup>
+    </Target>
+    <Target Name="FxCop" DependsOnTargets="ForceCodeAnalysis;PrepareGroups;RunFxCop" />
+    <Target Name="StyleCop" DependsOnTargets="ForceCodeAnalysis;PrepareGroups;RunStyleCop" />
+    <Target Name="Simian" DependsOnTargets="ForceCodeAnalysis;PrepareGroups;RunSimian" />
+    <!--///////////////////////////End Target CodeAnalysis///////////////////////////////////////////////////////////////-->
+
+    <!--///////////////////////////Target Test//////////////////////////////////////////////////////////////////////-->
+    <Target Name="Test">
+    </Target>
+    <!--///////////////////////////End Target Test//////////////////////////////////////////////////////////////////-->
+
+</Project>
