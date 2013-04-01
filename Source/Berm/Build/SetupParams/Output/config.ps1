@@ -2,7 +2,7 @@ $subscriptionName = "${Azure_subName}"
 $subscriptionId = "${Azure_subID}"
 
 $deploymentThumbprint = "${Azure_thumbprint}"
-$deploymentLocation = "West Europe"
+$deploymentLocation = "West US"
 $deploymentSlot = "${Azure_slot}"
 $deploymentLabel = "v${ProductInformationalVersion}"
 
