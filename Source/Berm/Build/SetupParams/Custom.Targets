@@ -7,13 +7,13 @@
   
     <ItemGroup>
         <Tokens Include="Azure_subID">
-            <ReplacementValue>xxx</ReplacementValue>
+            <ReplacementValue>e8636035-1760-468b-9d18-324a989af982</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_subName">
-            <ReplacementValue>xxx</ReplacementValue>
+            <ReplacementValue>Windows Azure MSDN - Visual Studio Ultimate</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_thumbprint">
-            <ReplacementValue>xxx</ReplacementValue>
+            <ReplacementValue>BF359B584D2F1B264EF9D7EF4C2AF9518813FD52</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_profile">
             <ReplacementValue>$(CloudTargetProfile)</ReplacementValue>

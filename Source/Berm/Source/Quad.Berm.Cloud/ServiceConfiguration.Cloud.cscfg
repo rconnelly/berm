@@ -3,9 +3,9 @@
   <Role name="Web">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bermstoragedev;AccountKey=xxx" />
-      <Setting name="ConnectionString.database" value="Server=tcp:xxx.database.windows.net,1433;Database=bermdbdev;User ID=bermuser@i7pa76ljux;Password=RuMbA52eTAs*;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
-      <Setting name="ConnectionString.storage" value="DefaultEndpointsProtocol=https;AccountName=bermstoragedev;AccountKey=xxx" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bermstoragedev;AccountKey=3/i3niZx0q+4VcwIX1GtRcps7rlWFY7b+/n/AJGjN7TVvJrpwy6zQFjzIH9Wd1snR4cXe+KhH2PQ/3UyjV91BA==" />
+      <Setting name="ConnectionString.database" value="Server=tcp:cv50lyq45a.database.windows.net,1433;Database=[bermdbdev];User ID=bermuser@cv50lyq45a;Password=RuMbA52eTAs*;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
+      <Setting name="ConnectionString.storage" value="DefaultEndpointsProtocol=https;AccountName=bermstoragedev;AccountKey=3/i3niZx0q+4VcwIX1GtRcps7rlWFY7b+/n/AJGjN7TVvJrpwy6zQFjzIH9Wd1snR4cXe+KhH2PQ/3UyjV91BA==" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

@@ -12,7 +12,7 @@
             <ReplacementValue>bermstoragedev</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_slot">
-            <ReplacementValue>Staging</ReplacementValue>
+            <ReplacementValue>Production</ReplacementValue>
         </Tokens>        
     </ItemGroup>
 

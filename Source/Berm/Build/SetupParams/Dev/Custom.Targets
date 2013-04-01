@@ -6,7 +6,7 @@
             <ReplacementValue>bermdev</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_sqldb">
-            <ReplacementValue>nermdbdev</ReplacementValue>
+            <ReplacementValue>bermdbdev</ReplacementValue>
         </Tokens>
         <Tokens Include="Azure_storage">
             <ReplacementValue>bermstoragedev</ReplacementValue>
