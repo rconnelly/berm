@@ -1,6 +1,5 @@
 namespace Quad.Berm.Mvc.Security
 {
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
 
@@ -8,10 +7,13 @@ namespace Quad.Berm.Mvc.Security
     {
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
         {
-            Contract.Assert(incomingPrincipal != null);
-            var principal = IsKnownPrincipal(incomingPrincipal) 
-                ? CreateAuthenticatedPrincipal(incomingPrincipal) 
-                : CreateUnauthenticatedPrincipal(incomingPrincipal);
+            var principal = incomingPrincipal;
+            if (incomingPrincipal != null)
+            {
+                principal = IsKnownPrincipal(incomingPrincipal)
+                                    ? CreateAuthenticatedPrincipal(incomingPrincipal)
+                                    : CreateUnauthenticatedPrincipal();
+            }
 
             return principal;
         }
@@ -29,12 +31,11 @@ namespace Quad.Berm.Mvc.Security
 
         private static ClaimsPrincipal CreateAuthenticatedPrincipal(ClaimsPrincipal incomingPrincipal)
         {
-            var claims = incomingPrincipal.Claims.ToList();
             var role = GetRole(incomingPrincipal);
-            claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, role));
-            var identity = new ClaimsIdentity(claims, "Federated");
-            var principal = new ClaimsPrincipal(identity);
-            return principal;
+
+            var identity = (ClaimsIdentity)incomingPrincipal.Identity;
+            identity.AddClaim(new Claim(ClaimTypes.Role, role));
+            return incomingPrincipal;
         }
 
         private static string GetRole(ClaimsPrincipal incomingPrincipal)
@@ -53,9 +54,9 @@ namespace Quad.Berm.Mvc.Security
             return role;
         }
 
-        private static ClaimsPrincipal CreateUnauthenticatedPrincipal(ClaimsPrincipal incomingPrincipal)
+        private static ClaimsPrincipal CreateUnauthenticatedPrincipal()
         {
-            var identity = new ClaimsIdentity(incomingPrincipal.Claims);
+            var identity = new ClaimsIdentity();
             var principal = new ClaimsPrincipal(identity);
             return principal;
         }
