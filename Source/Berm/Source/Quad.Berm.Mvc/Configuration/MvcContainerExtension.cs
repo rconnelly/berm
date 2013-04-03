@@ -11,12 +11,10 @@
     using System.Security;
     using System.Web;
     using System.Web.Mvc;
-    using System.Web.Mvc.Async;
 
     using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;
     using Microsoft.Practices.EnterpriseLibrary.Common.Configuration.ContainerModel.Unity;
     using Microsoft.Practices.EnterpriseLibrary.ExceptionHandling;
-    using Microsoft.Practices.ServiceLocation;
     using Microsoft.Practices.Unity;
 
     using Quad.Berm.Business.Exceptions;
@@ -43,17 +41,19 @@
         {
             base.Initialize();
 
-            this.Container.RegisterType<IAsyncActionInvoker, AsyncControllerActionInvoker>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<IControllerFactory, DefaultControllerFactory>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IAsyncActionInvoker, AsyncControllerActionInvoker>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IControllerFactory, DefaultControllerFactory>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ModelMetadataProvider, CachedDataAnnotationsModelMetadataProvider>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<ITempDataProvider, SessionStateTempDataProvider>(new ContainerControlledLifetimeManager());
+            // this.Container.RegisterType<IViewPageActivator>(new ContainerControlledLifetimeManager(), new InjectionFactory(c => null));
             this.Container.RegisterType<IControllerActivator, ServiceLocatorControllerActivator>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<ModelMetadataProvider, CachedDataAnnotationsModelMetadataProvider>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<ITempDataProvider, SessionStateTempDataProvider>(new ContainerControlledLifetimeManager());
-            this.Container.RegisterType<IViewPageActivator>(new ContainerControlledLifetimeManager(), new InjectionFactory(c => null));
             this.Container.RegisterType<AmbientContextLifetimeStore, AmbientContextLifetimeHttpContextStore>(new ContainerControlledLifetimeManager());
 
             this.ConfigureExceptionHandling();
 
-            DependencyResolver.SetResolver(ServiceLocator.Current);
+            // DependencyResolver.SetResolver(ServiceLocator.Current);
+            var resolver = new UnityDependencyResolver(this.Container);
+            DependencyResolver.SetResolver(resolver);
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Microsoft.Practices.EnterpriseLibrary.Common.Configuration.Fluent.IExceptionConfigurationWithMessage.UsingMessage(System.String)", Justification = "As Designed")]
