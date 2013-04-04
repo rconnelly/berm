@@ -1,6 +1,9 @@
 namespace Quad.Berm.Data
 {
     using System.Collections.Generic;
+    using System.Linq;
+
+    using Ach.Fulfillment.Data;
 
     public class RoleEntity : BaseEntity
     {
@@ -11,5 +14,10 @@ namespace Quad.Berm.Data
         public virtual ICollection<OrganizationGroupEntity> OrganizationGroup { get; set; }
 
         public virtual string Name { get; set; }
+
+        public virtual bool HasAny(params AccessRight[] rights)
+        {
+            return this.Permissions.Select(p => p.Name).Any(rights.Contains);
+        }
     }
 }

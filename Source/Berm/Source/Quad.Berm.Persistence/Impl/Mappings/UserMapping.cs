@@ -10,6 +10,8 @@
         public void Override(AutoMapping<UserEntity> mapping)
         {
             mapping.Table("[User]");
+
+            mapping.HasMany(m => m.StsCredentials).Cascade.AllDeleteOrphan().Inverse();
         }
     }
 }

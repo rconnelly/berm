@@ -1,4 +1,6 @@
-namespace Quad.Berm.Persistence
+// ReSharper disable CheckNamespace
+namespace Quad.Berm.Data
+// ReSharper restore CheckNamespace
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -8,6 +10,7 @@ namespace Quad.Berm.Persistence
 
     using Quad.Berm.Common.Exceptions;
     using Quad.Berm.Data.Specifications;
+    using Quad.Berm.Persistence;
 
     public static class RepositoryExtension
     {

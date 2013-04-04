@@ -41,17 +41,11 @@
         {
             base.Initialize();
 
-            // this.Container.RegisterType<IAsyncActionInvoker, AsyncControllerActionInvoker>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IControllerFactory, DefaultControllerFactory>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ModelMetadataProvider, CachedDataAnnotationsModelMetadataProvider>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<ITempDataProvider, SessionStateTempDataProvider>(new ContainerControlledLifetimeManager());
-            // this.Container.RegisterType<IViewPageActivator>(new ContainerControlledLifetimeManager(), new InjectionFactory(c => null));
             this.Container.RegisterType<IControllerActivator, ServiceLocatorControllerActivator>(new ContainerControlledLifetimeManager());
             this.Container.RegisterType<AmbientContextLifetimeStore, AmbientContextLifetimeHttpContextStore>(new ContainerControlledLifetimeManager());
 
             this.ConfigureExceptionHandling();
 
-            // DependencyResolver.SetResolver(ServiceLocator.Current);
             var resolver = new UnityDependencyResolver(this.Container);
             DependencyResolver.SetResolver(resolver);
         }

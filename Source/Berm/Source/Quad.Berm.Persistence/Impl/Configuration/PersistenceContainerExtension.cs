@@ -1,23 +1,29 @@
 ﻿namespace Quad.Berm.Persistence.Impl.Configuration
 {
     using System;
+    using System.Collections.Specialized;
     using System.Configuration;
+    using System.Data.SqlClient;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     using Microsoft.Practices.EnterpriseLibrary.Common.Configuration;
     using Microsoft.Practices.EnterpriseLibrary.Common.Configuration.ContainerModel.Unity;
     using Microsoft.Practices.EnterpriseLibrary.Data.Configuration;
+    using Microsoft.Practices.EnterpriseLibrary.ExceptionHandling;
     using Microsoft.Practices.Unity;
 
     using NHibernate;
+    using NHibernate.Exceptions;
 
     using Quad.Berm.Common.Exceptions;
     using Quad.Berm.Common.Transactions;
     using Quad.Berm.Common.Unity;
     using Quad.Berm.Data;
     using Quad.Berm.Data.Specifications;
+    using Quad.Berm.Persistence.Exceptions;
     using Quad.Berm.Persistence.Impl.Commands;
 
     using Unity.AutoRegistration;
@@ -181,7 +187,7 @@
         private void RegisterCommands()
         {
             this
-                .ConfigureSelfAutoRegistration(typeof(ISpecification<>))
+                .ConfigureSelfAutoRegistration(typeof(ISpecification<>), typeof(IEntity))
                 .Include(
                     t => t.IsClass && !t.IsGenericType && !t.IsAbstract && t.Name.EndsWith(WellKnownAppParts.Command, StringComparison.Ordinal),
                     Then.Register().As(t => CommandToContract(t)))
@@ -201,26 +207,82 @@
             {
                 var builder = new ConfigurationSourceBuilder();
                 builder.ConfigureExceptionHandling()
-                       .GivenPolicyWithName(DeletePolicy)
-                       .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
-                       .WrapWith<DeleteConstraintException>()
-                       .UsingMessage("Cannot delete object.")
-                       .ThenThrowNewException()
-                       .ForExceptionType<Exception>()
-                       .ThenNotifyRethrow()
-                       .GivenPolicyWithName(ExecutePolicy)
-                       .ForExceptionType<NHibernate.Exceptions.ConstraintViolationException>()
-                       .WrapWith<DeleteConstraintException>()
-                       .UsingMessage("Cannot delete object.")
-                       .ThenThrowNewException()
-                       .ForExceptionType<Exception>()
-                       .ThenNotifyRethrow();
+                        .GivenPolicyWithName(DeletePolicy)
+                            .ForExceptionType<ConstraintViolationException>()
+                                .WrapWith<DeleteConstraintException>()
+                                .UsingMessage("Cannot delete object.")
+                                .ThenThrowNewException()
+                            .ForExceptionType<Exception>()
+                                .ThenNotifyRethrow()
+                        .GivenPolicyWithName(ExecutePolicy)
+                            .ForExceptionType<ConstraintViolationException>()
+                                .WrapWith<DeleteConstraintException>()
+                                .UsingMessage("Cannot delete object.")
+                                .ThenThrowNewException()
+                            .ForExceptionType<GenericADOException>()
+                                .HandleCustom<SqlExceptionHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<SqlException>()
+                                .HandleCustom<SqlExceptionHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<Exception>()
+                                .ThenNotifyRethrow();
                 builder.UpdateConfigurationWithReplace(configurationSource);
 
                 using (var configurator = new UnityContainerConfigurator(this.Container))
                 {
                     EnterpriseLibraryContainer.ConfigureContainer(configurator, configurationSource);
                 }
+            }
+        }
+
+        #endregion
+
+        #region Nested types
+
+        // ReSharper disable ClassNeverInstantiated.Local
+        private class SqlExceptionHandler : IExceptionHandler
+        // ReSharper restore ClassNeverInstantiated.Local
+        {
+            private static readonly Regex IndexDuplicateInsertConstraintRegex = new Regex("'(?<ConstraintName>(?<ConstraintType>PK|FK|IX|UX|DF)_[a-z_]*)'", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+            [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "collection", Justification = "By design")]
+            // ReSharper disable UnusedParameter.Local
+            public SqlExceptionHandler(NameValueCollection collection)
+            // ReSharper restore UnusedParameter.Local
+            {
+            }
+
+            public Exception HandleException(Exception exception, Guid handlingInstanceId)
+            {
+                Exception result = null;
+                Exception dispatched = null;
+                var adoException = exception as GenericADOException;
+                if (adoException != null)
+                {
+                    dispatched = adoException.InnerException;
+                }
+
+                var sqlException = (dispatched ?? exception) as SqlException;
+                if (sqlException != null)
+                {
+                    if (sqlException.Errors
+                        .Cast<SqlError>()
+                        .Any(error =>
+                            error.Number == (int)SqlExceptionNumber.IndexDuplicateInsert
+                            || error.Number == (int)SqlExceptionNumber.KeyDuplicateInsert))
+                    {
+                        var matches = IndexDuplicateInsertConstraintRegex.Match(exception.Message);
+                        var constraintNameGroup = matches.Groups["ConstraintName"];
+
+                        result = new ExecutionConstraintException(exception)
+                        {
+                            ConstraintName = constraintNameGroup.Success ? constraintNameGroup.Value : null
+                        };
+                    }
+                }
+
+                return result ?? new PersistenceException(exception.Message, exception);
             }
         }
 

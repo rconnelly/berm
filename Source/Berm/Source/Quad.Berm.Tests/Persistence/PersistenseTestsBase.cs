@@ -15,8 +15,6 @@
     {
         #region Constants and Fields
 
-        protected readonly StringGenerator ShortStringGenerator = new StringGenerator(5, 20);
-
         private Transaction transaction;
 
         private AmbientContext context;

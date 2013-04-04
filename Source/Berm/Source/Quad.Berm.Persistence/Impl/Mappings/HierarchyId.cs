@@ -10,7 +10,7 @@
     using NHibernate.SqlTypes;
     using NHibernate.UserTypes;
 
-    public class HierarchyId : IUserType
+    internal class HierarchyId : IUserType
     {
         #region Properties
 

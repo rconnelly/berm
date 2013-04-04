@@ -152,9 +152,13 @@
     <Compile Include="Exceptions\BusinessException.cs" />
     <Compile Include="Exceptions\BusinessValidationException.cs" />
     <Compile Include="Exceptions\ValidationFailureInfo.cs" />
+    <Compile Include="Impl\ClaimExtension.cs" />
+    <Compile Include="Impl\Validation\UserValidator.cs" />
+    <Compile Include="IUserManager.cs" />
     <Compile Include="IManager.cs" />
     <Compile Include="Impl\Configuration\BusinessContainerExtension.cs" />
     <Compile Include="Impl\ManagerBase.cs" />
+    <Compile Include="Impl\UserManager.cs" />
     <Compile Include="Impl\Validation\ExistingValuePropertyValidator.cs" />
     <Compile Include="Impl\Validation\UniquePropertyValidator.cs" />
     <Compile Include="Impl\Validation\ValidationExtension.cs" />

@@ -3,9 +3,9 @@
 <#
 string[] rights = new string[]
   {
-    "SuperAdmin",
-    "LocalAdmin",
-    "User"
+  "ManageSuperAdmin",
+  "ManageLocalAdmin",
+  "ManageUser"
   };
 
 

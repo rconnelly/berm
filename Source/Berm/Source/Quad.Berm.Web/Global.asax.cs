@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Web;
     using System.Web.Http;
     using System.Web.Mvc;
@@ -108,13 +109,24 @@
 
             if (!this.Context.Items.Contains(Key))
             {
-                this.ShowErrorPage(
-                    status,
-                    (controller, context, routeData) =>
-                    {
-                        var requestContext = new RequestContext(context, routeData);
-                        ((IController)controller).Execute(requestContext);
-                    });
+                var isjson =
+                    (this.Request.AcceptTypes ?? new string[0]).Any(
+                        t => string.Equals(t, "application/json", StringComparison.OrdinalIgnoreCase));
+
+                if (isjson)
+                {
+                    this.ShowJsonErrorPage(status);
+                }
+                else
+                {
+                    this.ShowErrorPage(
+                        status,
+                        (controller, context, routeData) =>
+                            {
+                                var requestContext = new RequestContext(context, routeData);
+                                ((IController)controller).Execute(requestContext);
+                            });
+                }
 
                 this.Context.Items.Add(Key, 1);
             }
@@ -160,6 +172,15 @@
                 
                 fill(errorController, httpContext, routeData);
             }
+        }
+
+        private void ShowJsonErrorPage(int status)
+        {
+            this.Server.ClearError();
+            this.Response.StatusCode = status;
+
+            // Avoid IIS7 getting in the middle
+            this.Response.TrySkipIisCustomErrors = true;
         }
 
         #endregion

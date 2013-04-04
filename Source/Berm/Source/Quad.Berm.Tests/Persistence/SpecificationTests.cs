@@ -19,7 +19,7 @@
         public void PermissionSpecification()
         {
             var permission = new PersistenceSpecification<PermissionEntity>(this.Session)
-                .CheckProperty(c => c.Name, AccessRight.SuperAdmin)
+                .CheckProperty(c => c.Name, AccessRight.ManageSuperAdmin)
             .VerifyTheMappings();
 
             Assert.That(permission, Is.Not.Null);
@@ -107,7 +107,7 @@
             .VerifyTheMappings();
 
             var permission = new PersistenceSpecification<PermissionEntity>(this.Session)
-                .CheckProperty(c => c.Name, AccessRight.User)
+                .CheckProperty(c => c.Name, AccessRight.ManageUser)
             .VerifyTheMappings();
 
             role = this.Session.Load<RoleEntity>(role.Id);

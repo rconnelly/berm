@@ -2,17 +2,17 @@
   {
   public enum AccessRight
   {
-          SuperAdmin,
-        LocalAdmin,
-        User,
+          ManageSuperAdmin,
+        ManageLocalAdmin,
+        ManageUser,
     }
 
     public static class AccessRightRegistry
     {
-        public const string SuperAdmin = "SuperAdmin";
+        public const string ManageSuperAdmin = "ManageSuperAdmin";
 
-        public const string LocalAdmin = "LocalAdmin";
+        public const string ManageLocalAdmin = "ManageLocalAdmin";
 
-        public const string User = "User";
+        public const string ManageUser = "ManageUser";
     }
 }
