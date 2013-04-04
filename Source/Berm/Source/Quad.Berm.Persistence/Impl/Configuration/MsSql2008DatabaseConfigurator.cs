@@ -36,14 +36,14 @@ namespace Quad.Berm.Persistence.Impl.Configuration
                 {
                     switch (sqle.Number)
                     {
-                        case 547:
+                        case (int)SqlExceptionNumber.StatementConflicted:
                             result = new ConstraintViolationException(
                                 sqle.Message,
                                 sqle, 
                                 contextInfo.Sql, 
                                 null);
                             break;
-                        case 208:
+                        case (int)SqlExceptionNumber.InvalidObjectName:
                             result = new SQLGrammarException(
                                 contextInfo.Message,
                                 sqle, 

@@ -2,21 +2,22 @@
 <#@ output extension=".cs" #>
 <#
 string[] rights = new string[]
-{ 
-	"Admin", 
-	"SuperAdmin" 
-};
+  {
+  "ManageSuperAdmin",
+  "ManageLocalAdmin",
+  "ManageUser"
+  };
 
 
 
 
 
-#>
-namespace Ach.Fulfillment.Data
-{
-    public enum AccessRight
-    {
-<#
+  #>
+  namespace Ach.Fulfillment.Data
+  {
+  public enum AccessRight
+  {
+  <#
 		foreach(var r in rights)
 		{
 			this.Write("        {0},\r\n", r);

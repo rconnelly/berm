@@ -8,5 +8,22 @@
     </hgroup>
     <p>
         Fill free to add any necessary content here
+        <input type="button" onclick="test()" value="Press" />
     </p>
 </div>
+<script type="text/javascript">
+    function test() {
+        $.ajax(
+            {
+                url: '/Main/Home/TestAjax?complete=false',
+                dataType: 'json',
+                success: function (resp) {
+                    console.log(resp);
+                    alert(resp.complete);
+                },
+                error: function (resp) {
+                    alert(resp.responseText);
+                }
+            });
+    }
+</script>

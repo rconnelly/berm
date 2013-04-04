@@ -112,8 +112,13 @@
     <Reference Include="LinqSpecs">
       <HintPath>..\..\_libBinary\LinqSpecs.1.0\lib\LinqSpecs.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\110\SDK\Assemblies\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -130,12 +135,19 @@
       <DependentUpon>AccessRight.tt</DependentUpon>
     </Compile>
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="ClaimExtension.cs" />
     <Compile Include="IAuditable.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IIdentified.cs" />
     <Compile Include="InvalidState.cs" />
     <Compile Include="MetadataInfo.cs" />
+    <Compile Include="ClientEntity.cs" />
+    <Compile Include="OrganizationGroupEntity.cs" />
+    <Compile Include="PermissionEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoleEntity.cs" />
+    <Compile Include="UserEntity.cs" />
+    <Compile Include="StsCredentialEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">
@@ -146,6 +158,7 @@
     <None Include="AccessRight.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AccessRight.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

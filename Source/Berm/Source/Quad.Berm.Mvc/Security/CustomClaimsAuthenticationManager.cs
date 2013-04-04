@@ -1,57 +1,65 @@
 namespace Quad.Berm.Mvc.Security
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
 
+    using Microsoft.Practices.ServiceLocation;
+
+    using Quad.Berm.Business;
+    using Quad.Berm.Data;
+
     public class CustomClaimsAuthenticationManager : ClaimsAuthenticationManager
     {
+        private static IUserManager UserManager
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<IUserManager>();
+            }
+        }
+
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
         {
             var principal = incomingPrincipal;
             if (incomingPrincipal != null)
             {
-                principal = IsKnownPrincipal(incomingPrincipal)
-                                    ? CreateAuthenticatedPrincipal(incomingPrincipal)
+                var claims = GetUserClaims(incomingPrincipal);
+                principal = claims.Any()
+                                    ? CreateAuthenticatedPrincipal(incomingPrincipal, claims)
                                     : CreateUnauthenticatedPrincipal();
             }
 
             return principal;
         }
 
-        private static bool IsKnownPrincipal(ClaimsPrincipal incomingPrincipal)
+        private static IList<Claim> GetUserClaims(ClaimsPrincipal incomingPrincipal)
         {
-            // todo: check user exist in database
-            var known =
-                incomingPrincipal.Claims.Any(
-                    c =>
-                    c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-                    && c.Value == "dmitriy@quad.io");
-            return known;
-        }
+            var provider = incomingPrincipal.FindFirst(MetadataInfo.ClaimTypes.IdentityProvider);
+            var email = incomingPrincipal.FindFirst(ClaimTypes.Email);
 
-        private static ClaimsPrincipal CreateAuthenticatedPrincipal(ClaimsPrincipal incomingPrincipal)
-        {
-            var role = GetRole(incomingPrincipal);
-
-            var identity = (ClaimsIdentity)incomingPrincipal.Identity;
-            identity.AddClaim(new Claim(ClaimTypes.Role, role));
-            return incomingPrincipal;
-        }
-
-        private static string GetRole(ClaimsPrincipal incomingPrincipal)
-        {
-            // todo: read role from database
-            var role = "User";
-            if (
-                incomingPrincipal.Claims.Any(
-                    c =>
-                    c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-                    && c.Value == "dmitriy@quad.io"))
+            IList<Claim> claims = null;
+            if (provider != null && email != null && provider.Value != null && email.Value != null)
             {
-                role = "Admin";
+                var user = UserManager.FindActive(provider.Value, email.Value);
+                if (user != null)
+                {
+                    claims = user.ToClaims().ToList();
+                }
             }
 
-            return role;
+            return claims ?? new List<Claim>();
+        }
+
+        private static ClaimsPrincipal CreateAuthenticatedPrincipal(ClaimsPrincipal incomingPrincipal, IEnumerable<Claim> claims)
+        {
+            Contract.Assert(claims != null);
+            
+            var identity = (ClaimsIdentity)incomingPrincipal.Identity;
+            identity.AddClaims(claims);
+            
+            return incomingPrincipal;
         }
 
         private static ClaimsPrincipal CreateUnauthenticatedPrincipal()

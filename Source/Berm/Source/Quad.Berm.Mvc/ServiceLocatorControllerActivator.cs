@@ -6,7 +6,7 @@ namespace Quad.Berm.Mvc
 
     using Microsoft.Practices.ServiceLocation;
 
-    public class ServiceLocatorControllerActivator : IControllerActivator
+    internal class ServiceLocatorControllerActivator : IControllerActivator
     {
         #region Implementation of IControllerActivator
 

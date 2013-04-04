@@ -1,15 +1,18 @@
-﻿namespace Quad.Berm.Data
-{
-    public enum AccessRight
-    {
-        Admin,
-        SuperAdmin,
+﻿  namespace Ach.Fulfillment.Data
+  {
+  public enum AccessRight
+  {
+          ManageSuperAdmin,
+        ManageLocalAdmin,
+        ManageUser,
     }
 
     public static class AccessRightRegistry
     {
-        public const string Admin = "Admin";
+        public const string ManageSuperAdmin = "ManageSuperAdmin";
 
-        public const string SuperAdmin = "SuperAdmin";
+        public const string ManageLocalAdmin = "ManageLocalAdmin";
+
+        public const string ManageUser = "ManageUser";
     }
 }

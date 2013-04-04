@@ -154,10 +154,9 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\RootException.cs" />
     <Compile Include="Logging\LeveledTraceAppender.cs" />
-    <Compile Include="Security\ApplicationIdentity.cs" />
-    <Compile Include="Security\ApplicationPrincipal.cs" />
-    <Compile Include="Security\IApplicationIdentity.cs" />
-    <Compile Include="Security\IApplicationPrincipal.cs" />
+    <Compile Include="Security\IApplicationPrincipal.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Security\ThreadApplicationPrincipal.cs" />
     <Compile Include="Unity\Shell.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -170,6 +169,7 @@
     <Compile Include="Unity\AmbientContext.cs" />
     <Compile Include="Unity\AutoRegistrationExtension.cs" />
     <Compile Include="Unity\AmbientContextLifetimeManager.cs" />
+    <Compile Include="Unity\UnityExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\Common\Dictionary.xml">

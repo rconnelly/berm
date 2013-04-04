@@ -4,6 +4,7 @@
     using System.IdentityModel.Services;
     using System.Net;
     using System.Security.Permissions;
+    using System.Web;
     using System.Web.Mvc;
 
     using Microsoft.Practices.Unity;
@@ -46,6 +47,16 @@
         public ActionResult Claims()
         {
             return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        public ActionResult TestAjax(bool complete)
+        {
+            if (!complete)
+            {
+                throw new HttpException(401, "no access");
+            }
+
+            return this.Json(new { complete = true }, JsonRequestBehavior.AllowGet);
         }
     }
 }

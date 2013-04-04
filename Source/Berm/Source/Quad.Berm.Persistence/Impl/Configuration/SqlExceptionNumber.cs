@@ -100,7 +100,7 @@
         // <insert symbolic name here> = 205 // All queries in an SQL statement containing a UNION operator must have an equal number of expressions in their target lists.
         // <insert symbolic name here> = 206 // Operand type clash: %ls is incompatible with %ls
         // <insert symbolic name here> = 207 // Invalid column name '%.*ls'.
-        // <insert symbolic name here> = 208 // Invalid object name '%.*ls'.
+        InvalidObjectName = 208, // Invalid object name '%.*ls'.
         // <insert symbolic name here> = 209 // Ambiguous column name '%.*ls'.
         // <insert symbolic name here> = 210 // Syntax error converting datetime from binary/varbinary string.
         // <insert symbolic name here> = 211 // Possible schema corruption. Run DBCC CHECKCATALOG.
@@ -233,7 +233,7 @@
         // <insert symbolic name here> = 542 // An invalid datetime value was encountered. Value exceeds the year 9999.
         // <insert symbolic name here> = 544 // Cannot insert explicit value for identity column in table '%.*ls' when IDENTITY_INSERT is set to OFF.
         // <insert symbolic name here> = 545 // Explicit value must be specified for identity column in table '%.*ls' when IDENTITY_INSERT is set to ON.
-        // <insert symbolic name here> = 547 // %ls statement conflicted with %ls %ls constraint '%.*ls'. The conflict occurred in database '%.*ls', table '%.*ls'%ls%.*ls%ls.
+        StatementConflicted = 547, // %ls statement conflicted with %ls %ls constraint '%.*ls'. The conflict occurred in database '%.*ls', table '%.*ls'%ls%.*ls%ls.
         // <insert symbolic name here> = 548 // The identity range managed by replication is full and must be updated by a replication agent. The %ls conflict occurred in database '%.*ls', table '%.*ls'%ls%.*ls%ls. Sp_adjustpublisheridentityrange can be called to g
         // <insert symbolic name here> = 550 // The attempted insert or update failed because the target view either specifies WITH CHECK OPTION or spans a view that specifies WITH CHECK OPTION and one or more rows resulting from the operation did not qualify under
         // <insert symbolic name here> = 551 // The checksum has changed to %d. This shows that the row has been updated by another user.
