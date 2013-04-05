@@ -8,7 +8,8 @@ set IDENTITY_INSERT [berm].[Permission] on
 INSERT INTO [berm].[Permission]([PermissionId],[Name],[Created]) VALUES 
 	(1, 'ManageSuperAdmin', getdate()),
     (2, 'ManageLocalAdmin', getdate()),
-    (3, 'ManageUser', getdate())    
+    (3, 'ManageUser', getdate()),
+    (4, 'ManageSecurity', getdate())    
 set IDENTITY_INSERT [berm].[Permission] off
 
 
@@ -43,8 +44,10 @@ INSERT INTO [berm].[OrganizationGroupRole]([OrganizationGroupId],[RoleId])VALUES
 INSERT INTO [berm].[PermissionRole]([RoleId],[PermissionId])VALUES
 	(1,1),
     (1,3),
+    (1,4),
     (2,2),
-    (2,3)
+    (2,3),
+    (2,4)
 
 
 set IDENTITY_INSERT [berm].[User] on

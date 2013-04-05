@@ -3,8 +3,6 @@ namespace Quad.Berm.Data
     using System.Collections.Generic;
     using System.Linq;
 
-    using Ach.Fulfillment.Data;
-
     public class RoleEntity : BaseEntity
     {
         public virtual ICollection<PermissionEntity> Permissions { get; set; } 

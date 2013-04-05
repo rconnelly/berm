@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Membership";
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function() {
+            $('#userList').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": '@Url.Action("Index")',
+                // "sServerMethod": "POST",
+                "fnServerData": function(sSource, aoData, fnCallback) {
+                    $.ajax({
+                        "dataType": "json",
+                        "type": "POST",
+                        "cache": false,
+                        "url": sSource,
+                        "data": aoData,
+                        "success": fnCallback,
+                        "error": function (jqXHR, textStatus, errorThrown) {
+                            // todo: process session expired correctly
+                            alert(errorThrown);
+                        }
+                    });
+                },
+                "aoColumnDefs": [
+                    {
+                        "aTargets": [0],
+                        "mData": 0,
+                        "sName": "Id",
+                        "sTitle": "Id",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "bVisible": false
+                    },
+                    {
+                        "aTargets": [1],
+                        "mData": 1,
+                        "sName": "Name",
+                        "sTitle": "Name",
+                        "mRender": function (data, type, full) {
+                            return '<a href=\"/manage/Membership/Edit/' + full[0] + '\">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "aTargets": [2],
+                        "mData": 2,
+                        "sName": "Identifier",
+                        "sTitle": "Identifier"
+                    },
+                    {
+                        "aTargets": [3],
+                        "mData": 4,
+                        "sName": "Client",
+                        "sTitle": "Client"
+                    },
+                    {
+                        "aTargets": [4],
+                        "mData": 3,
+                        "sName": "Role",
+                        "sTitle": "Role"
+                    },
+                    {
+                        "aTargets": [5],
+                        "mData": 5,
+                        "sName": "Disabled",
+                        "sTitle": "Disabled",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "mRender": function (data) {
+                            return data == "True" ? 'Y' : 'N';
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}
+
+<table id="userList" >
+</table>    

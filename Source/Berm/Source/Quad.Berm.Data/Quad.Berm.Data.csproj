@@ -135,7 +135,7 @@
       <DependentUpon>AccessRight.tt</DependentUpon>
     </Compile>
     <Compile Include="BaseEntity.cs" />
-    <Compile Include="ClaimExtension.cs" />
+    <Compile Include="IdentityExtension.cs" />
     <Compile Include="IAuditable.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IIdentified.cs" />

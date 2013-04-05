@@ -1,18 +1,24 @@
 ﻿namespace Quad.Berm.Web.Areas.Main.Controllers
 {
-    using System;
-    using System.IdentityModel.Services;
-    using System.Net;
-    using System.Security.Permissions;
-    using System.Web;
     using System.Web.Mvc;
 
     using Microsoft.Practices.Unity;
 
     public class HomeController : Controller
     {
+        #region Public Properties
+
         [Dependency]
         public HomeManager Manager { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public ActionResult Index()
+        {
+            return this.View();
+        }
 
         public ActionResult LogOff()
         {
@@ -21,42 +27,6 @@
             return this.RedirectToAction("Index", "Home");
         }
 
-        public ActionResult Index()
-        {
-            return this.View();
-        }
-
-        public ActionResult UnhandledError()
-        {
-            throw new Exception("bla-la");
-        }
-
-        [Authorize(Roles = "Admin")]
-        public ActionResult Unauthorized()
-        {
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        [PrincipalPermission(SecurityAction.Demand, Role = "Admin")]
-        public ActionResult Principal()
-        {
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        [ClaimsPrincipalPermission(SecurityAction.Demand, Resource = "resource1", Operation = "action1")]
-        public ActionResult Claims()
-        {
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        public ActionResult TestAjax(bool complete)
-        {
-            if (!complete)
-            {
-                throw new HttpException(401, "no access");
-            }
-
-            return this.Json(new { complete = true }, JsonRequestBehavior.AllowGet);
-        }
+        #endregion
     }
 }

@@ -14,6 +14,8 @@
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.ServiceRuntime;
 
+    using global::Mvc.JQuery.Datatables;
+
     using Newtonsoft.Json.Serialization;
 
     using Quad.Berm.Common.Exceptions;
@@ -28,6 +30,21 @@
         #region Fields
 
         private const string AmbientContextKey = "ac";
+
+        #endregion
+
+        #region Properties
+
+        private bool IsJsonRequest
+        {
+            get
+            {
+                var isjson =
+                    (this.Request.AcceptTypes ?? new string[0]).Any(
+                        t => string.Equals(t, "application/json", StringComparison.OrdinalIgnoreCase));
+                return isjson;
+            }
+        }
 
         #endregion
 
@@ -52,7 +69,9 @@
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             MvcHandler.DisableMvcResponseHeader = true;
-            
+
+            ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
+
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
@@ -63,7 +82,12 @@
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            if (StatusHasErrorPage(this.Response.StatusCode))
+            if (this.Response.StatusCode == 302 && this.Response.RedirectLocation != null && this.IsJsonRequest)
+            {
+                this.Response.Clear();
+                this.Response.StatusCode = 401;
+            }
+            else if (StatusHasErrorPage(this.Response.StatusCode))
             {
                 this.ShowSpecialErrorPage(this.Response.StatusCode);
             }
@@ -109,9 +133,7 @@
 
             if (!this.Context.Items.Contains(Key))
             {
-                var isjson =
-                    (this.Request.AcceptTypes ?? new string[0]).Any(
-                        t => string.Equals(t, "application/json", StringComparison.OrdinalIgnoreCase));
+                var isjson = this.IsJsonRequest;
 
                 if (isjson)
                 {

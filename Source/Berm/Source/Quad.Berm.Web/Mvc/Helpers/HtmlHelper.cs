@@ -42,6 +42,15 @@ namespace Quad.Berm.Web.Mvc.Helpers
             return html.Raw(result);
         }
 
+        public static IHtmlString ActiveArea<TModel>(
+            this HtmlHelper<TModel> html,
+            string area)
+        {
+            var currentArea = html.ViewContext.RouteData.DataTokens["area"] as string;
+            var result = currentArea == area ? "class=\"active\"" : string.Empty;
+            return html.Raw(result);
+        }
+
         [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "As Designed")]
         public static IHtmlString ActiveController<TModel>(
             this HtmlHelper<TModel> html,

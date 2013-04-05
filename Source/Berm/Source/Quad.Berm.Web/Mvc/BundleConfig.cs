@@ -11,6 +11,7 @@
             bundles.Add(new StyleBundle("~/styles/general").Include(
                 "~/css/bootstrap.css",
                 "~/css/bootstrap-responsive.css",
+                "~/css/jquery.dataTables.css",
                 "~/css/main.css"));
 
             bundles.Add(new ScriptBundle("~/scripts/modernizr").Include(
@@ -24,6 +25,8 @@
                 "~/js/vendor/jquery.validate-*",
                 "~/js/vendor/jquery.validate.unobtrusive*",
                 "~/js/vendor/mvcfoolproof.unobtrusive*",
+                "~/js/vendor/jquery.dataTables.js",
+                "~/js/vendor/jquery.dataTables.bootstrap.js",
                 "~/js/site.bootstrap.validate.js"));
         }
     }
