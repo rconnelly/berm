@@ -31,5 +31,8 @@
 
 @section scripts
 {
+    <script type="text/javascript">
+        $.app.manage.membership.settings.roleurl = '@Url.RouteUrl(new { area = "Manage", controller = "Membership", action = "Roles" })';
+    </script>
     @RenderSection("scripts", false)
 }

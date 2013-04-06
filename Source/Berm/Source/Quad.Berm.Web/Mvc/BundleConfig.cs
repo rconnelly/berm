@@ -27,7 +27,8 @@
                 "~/js/vendor/mvcfoolproof.unobtrusive*",
                 "~/js/vendor/jquery.dataTables.js",
                 "~/js/vendor/jquery.dataTables.bootstrap.js",
-                "~/js/site.bootstrap.validate.js"));
+                "~/js/site.bootstrap.validate.js",
+                "~/js/app.js"));
         }
     }
 }

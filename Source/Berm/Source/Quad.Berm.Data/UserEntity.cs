@@ -34,7 +34,7 @@ namespace Quad.Berm.Data
         public virtual IEnumerable<Claim> ToClaims()
         {   
             yield return new Claim(MetadataInfo.ClaimTypes.UserId, this.Id.ToString(CultureInfo.InvariantCulture));
-
+            
             if (this.Role != null)
             {
                 yield return new Claim(ClaimTypes.Role, this.Role.Name);

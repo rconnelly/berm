@@ -282,9 +282,12 @@
     <Compile Include="Areas\Manage\Controllers\MembershipManager.cs" />
     <Compile Include="Areas\Manage\MainAreaRegistration.cs" />
     <Compile Include="Areas\Manage\Models\UserGridModel.cs" />
+    <Compile Include="Areas\Manage\Models\UserModel.cs" />
+    <Compile Include="Areas\Manage\Models\UserModelOption.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Mvc\BundleConfig.cs" />
     <Compile Include="Mvc\FilterConfig.cs" />
+    <Compile Include="Mvc\Helpers\ControllerHelper.cs" />
     <Compile Include="Mvc\RouteConfig.cs" />
     <Compile Include="Areas\Main\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Main\Controllers\HomeController.cs" />
@@ -309,20 +312,10 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="img\ajax-loader.gif" />
-    <Content Include="img\back_disabled.png" />
-    <Content Include="img\back_enabled.png" />
-    <Content Include="img\back_enabled_hover.png" />
-    <Content Include="img\forward_disabled.png" />
-    <Content Include="img\forward_enabled.png" />
-    <Content Include="img\forward_enabled_hover.png" />
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
     <Content Include="img\header_logo.png" />
-    <Content Include="img\sort_asc.png" />
-    <Content Include="img\sort_asc_disabled.png" />
-    <Content Include="img\sort_both.png" />
-    <Content Include="img\sort_desc.png" />
-    <Content Include="img\sort_desc_disabled.png" />
+    <Content Include="js\app.js" />
     <Content Include="js\site.bootstrap.validate.js" />
     <Content Include="js\vendor\additional-methods.js" />
     <Content Include="js\vendor\bootstrap-2.3.1.js" />
@@ -358,8 +351,14 @@
     <Content Include="Areas\Manage\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Manage\Views\Shared\_SubLayout.cshtml" />
     <Content Include="Areas\Manage\Views\Membership\Index.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\Create.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\Edit.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\_UserDetails.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\Error401.cshtml" />
+    <Content Include="Views\Shared\_errorSummary.cshtml">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Main\Views\Home\Index.cshtml" />

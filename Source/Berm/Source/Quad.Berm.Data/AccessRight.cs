@@ -6,6 +6,7 @@
         ManageSuperAdmin,
         ManageLocalAdmin,
         ManageUser,
+        ManageClients,
     }
 
     public static class AccessRightRegistry
@@ -17,5 +18,7 @@
         public const string ManageLocalAdmin = "ManageLocalAdmin";
 
         public const string ManageUser = "ManageUser";
+
+        public const string ManageClients = "ManageClients";
     }
 }

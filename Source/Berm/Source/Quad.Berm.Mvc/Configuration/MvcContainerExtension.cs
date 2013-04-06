@@ -62,6 +62,9 @@
                             .ForExceptionType<DeleteConstraintException>()
                                 .HandleCustom<BusinessValidationHandler>()
                                 .ThenThrowNewException()
+                            /*.ForExceptionType<ExecutionConstraintException>()
+                                .HandleCustom<BusinessValidationHandler>()
+                                .ThenThrowNewException()*/
                             .ForExceptionType<BusinessValidationException>()
                                 .ThenNotifyRethrow()
                             .ForExceptionType<BusinessException>()
@@ -98,9 +101,11 @@
                             .ForExceptionType<HttpException>()
                                 .ThenNotifyRethrow()
                             .ForExceptionType<SecurityException>()
-                                .WrapWith<HttpException>()
-                                    .HandleCustom<UnautorizedHttpExceptionHandler>()
-                                    .ThenThrowNewException()
+                                .HandleCustom<UnautorizedHttpExceptionHandler>()
+                                .ThenThrowNewException()
+                            .ForExceptionType<ObjectNotFoundException>()
+                                .HandleCustom<NotFoundHttpExceptionHandler>()
+                                .ThenThrowNewException()
                             .ForExceptionType<Exception>()
                                 .LogToCategory("General")
                                 .WithSeverity(TraceEventType.Critical)
@@ -190,6 +195,20 @@
             public Exception HandleException(Exception exception, Guid handlingInstanceId)
             {
                 var error = new HttpException((int)HttpStatusCode.Unauthorized, "You are not authorized to perform operation");
+                return error;
+            }
+        }
+
+        internal class NotFoundHttpExceptionHandler : IExceptionHandler
+        {
+            public NotFoundHttpExceptionHandler(NameValueCollection collection)
+            {
+                Contract.Assert(collection != null);
+            }
+
+            public Exception HandleException(Exception exception, Guid handlingInstanceId)
+            {
+                var error = new HttpException((int)HttpStatusCode.NotFound, "Requested object cannot be found");
                 return error;
             }
         }

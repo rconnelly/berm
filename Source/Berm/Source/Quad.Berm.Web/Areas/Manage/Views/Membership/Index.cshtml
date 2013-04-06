@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Quad.Berm.Business
+@using Quad.Berm.Data
+@using Quad.Berm.Web.Areas.Manage.Models
+@{
     ViewBag.Title = "Membership";
 }
 
@@ -9,7 +12,6 @@
             $('#userList').dataTable({
                 "bServerSide": true,
                 "sAjaxSource": '@Url.Action("Index")',
-                // "sServerMethod": "POST",
                 "fnServerData": function(sSource, aoData, fnCallback) {
                     $.ajax({
                         "dataType": "json",
@@ -19,10 +21,16 @@
                         "data": aoData,
                         "success": fnCallback,
                         "error": function (jqXHR, textStatus, errorThrown) {
-                            // todo: process session expired correctly
+                            // todo: process 401 correctly
                             alert(errorThrown);
                         }
                     });
+                },
+                "fnRowCallback": function (nRow, aData) {
+                    if (aData[5] === "True") {
+                        $(nRow).addClass("user-disabled");
+                    }
+                    return nRow;
                 },
                 "aoColumnDefs": [
                     {
@@ -40,7 +48,7 @@
                         "sName": "Name",
                         "sTitle": "Name",
                         "mRender": function (data, type, full) {
-                            return '<a href=\"/manage/Membership/Edit/' + full[0] + '\">' + data + '</a>';
+                            return '<a href="./Membership/Edit/' + full[0] + '">' + data + '</a>';
                         }
                     },
                     {
@@ -68,15 +76,70 @@
                         "sTitle": "Disabled",
                         "bSearchable": false,
                         "bSortable": false,
+                        "sWidth": "80px",
                         "mRender": function (data) {
                             return data == "True" ? 'Y' : 'N';
+                        }
+                    },
+                    {
+                        "aTargets": [6],
+                        "mData": 0,
+                        "sTitle": "",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "sWidth": "20px",
+                        "mRender": function (data) {
+                            return '<a href="./Membership/Delete/' + data + '" data-confirm="Are you sure you want to delete?"><i class="icon-remove"></i></a>';
                         }
                     }
                 ]
             });
+            
+            
         });
+        
     </script>
 }
 
-<table id="userList" >
-</table>    
+  
+
+<div class="well well-small">
+    <div class="btn-group">
+        @if (User.HasPermission(AccessRight.ManageSuperAdmin))
+        {
+            @Html.ActionLink("Create Local Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllLocalAdmins }, new { @class = "btn" })
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Create Super Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllSuperAdmins }, null)</li>
+                <li>@Html.ActionLink("Create User", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllLocalUsers }, null)</li>
+            </ul>
+        }
+        else
+        {
+            @Html.ActionLink("Create User", "Create", "Membership", new { area = "Manage", option = UserModelOption.BindedLocalUsers }, new { @class = "btn" })
+            if (User.HasPermission(AccessRight.ManageLocalAdmin))
+            {
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Create Local Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.BindedLocalAdmins }, null)</li>
+                </ul>
+            }
+        }
+    </div>
+</div>
+
+@if (this.TempData["CompleteMessage"] != null)
+{
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4>Complete!</h4>
+        @this.TempData["CompleteMessage"]
+    </div>
+}
+
+<table id="userList">
+</table>  

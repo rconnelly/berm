@@ -6,7 +6,8 @@ string[] rights = new string[]
   "ManageSecurity",
   "ManageSuperAdmin",
   "ManageLocalAdmin",
-  "ManageUser"
+  "ManageUser",
+  "ManageClients",
   };
 
 

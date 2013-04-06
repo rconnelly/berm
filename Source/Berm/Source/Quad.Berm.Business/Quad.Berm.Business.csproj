@@ -152,6 +152,10 @@
     <Compile Include="Exceptions\BusinessException.cs" />
     <Compile Include="Exceptions\BusinessValidationException.cs" />
     <Compile Include="Exceptions\ValidationFailureInfo.cs" />
+    <Compile Include="IClientManager.cs" />
+    <Compile Include="Impl\ClientManager.cs" />
+    <Compile Include="Impl\RoleManager.cs" />
+    <Compile Include="IRoleManager.cs" />
     <Compile Include="PrincipalExtension.cs" />
     <Compile Include="Impl\Validation\UserValidator.cs" />
     <Compile Include="IUserManager.cs" />
@@ -189,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

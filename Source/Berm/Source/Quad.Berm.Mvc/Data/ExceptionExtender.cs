@@ -13,7 +13,7 @@ namespace Quad.Berm.Mvc.Data
             Contract.Assert(exception != null);
             Contract.Assert(modelStateDictionary != null);
             var pairs = (from info in exception.Errors
-                         let property = !string.IsNullOrEmpty(info.PropertyName) ? info.PropertyName : info.ErrorCode
+                         let property = !string.IsNullOrEmpty(info.PropertyName) ? info.PropertyName : (info.ErrorCode ?? string.Empty)
                          let index = property.LastIndexOf('.')
                          let key = index > 0 && index < property.Length ? property.Substring(index + 1) : property
                          select new { key, info.ErrorMessage }).ToList();
