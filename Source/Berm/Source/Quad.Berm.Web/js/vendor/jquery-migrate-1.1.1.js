@@ -47,7 +47,7 @@ function migrateWarn( msg) {
 
 function migrateWarnProp( obj, prop, value, msg ) {
 	if ( Object.defineProperty ) {
-		// On ES5 browsers (non-oldIE), warn if the code tries to get prop;
+		// On ES5 browsers (non-oldIE), w_a_r_n if the code tries to get prop;
 		// allow property to be overwritten in case some other plugin wants it
 		try {
 			Object.defineProperty( obj, prop, {
@@ -64,7 +64,7 @@ function migrateWarnProp( obj, prop, value, msg ) {
 			});
 			return;
 		} catch( err ) {
-			// IE8 is a dope about Object.defineProperty, can't warn there
+		    // IE8 is a dope about Object.defineProperty, can't w_a_r_n there
 		}
 	}
 
@@ -98,7 +98,7 @@ jQuery.attr = function( elem, name, value, pass ) {
 		nType = elem && elem.nodeType;
 
 	if ( pass ) {
-		// Since pass is used internally, we only warn for new jQuery
+	    // Since pass is used internally, we only w_a_r_n for new jQuery
 		// versions where there isn't a pass arg in the formal params
 		if ( oldAttr.length < 4 ) {
 			migrateWarn("jQuery.fn.attr( props, pass ) is deprecated");
@@ -109,8 +109,8 @@ jQuery.attr = function( elem, name, value, pass ) {
 		}
 	}
 
-	// Warn if user tries to set `type`, since it breaks on IE 6/7/8; by checking
-	// for disconnected elements we don't warn on $( "<button>", { type: "button" } ).
+    // w_a_r_n if user tries to set `type`, since it breaks on IE 6/7/8; by checking
+    // for disconnected elements we don't w_a_r_n on $( "<button>", { type: "button" } ).
 	if ( name === "type" && value !== undefined && rnoType.test( elem.nodeName ) && elem.parentNode ) {
 		migrateWarn("Can't change the 'type' of an input or button in IE 6/7/8");
 	}
@@ -149,7 +149,7 @@ jQuery.attr = function( elem, name, value, pass ) {
 			}
 		};
 
-		// Warn only for attributes that can remain distinct from their properties post-1.9
+	    // w_a_r_n only for attributes that can remain distinct from their properties post-1.9
 		if ( ruseDefault.test( lowerName ) ) {
 			migrateWarn( "jQuery.fn.attr('" + lowerName + "') may use property instead of attribute" );
 		}
@@ -261,7 +261,7 @@ if ( !jQuery.browser ) {
 	jQuery.browser = browser;
 }
 
-// Warn if the code tries to get jQuery.browser
+    // w_a_r_n if the code tries to get jQuery.browser
 migrateWarnProp( jQuery, "browser", jQuery.browser, "jQuery.browser is deprecated" );
 
 jQuery.sub = function() {
@@ -391,7 +391,7 @@ var eventAdd = jQuery.event.add,
 		return events && events.replace( rhoverHack, "mouseenter$1 mouseleave$1" );
 	};
 
-// Event props removed in 1.9, put them back if needed; no practical way to warn them
+    // Event props removed in 1.9, put them back if needed; no practical way to w_a_r_n them
 if ( jQuery.event.props && jQuery.event.props[ 0 ] !== "attrChange" ) {
 	jQuery.event.props.unshift( "attrChange", "attrName", "relatedNode", "srcElement" );
 }

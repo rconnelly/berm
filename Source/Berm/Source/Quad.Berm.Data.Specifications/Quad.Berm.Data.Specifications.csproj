@@ -153,6 +153,7 @@
     <Compile Include="User\ActiveUserByCredentials.cs" />
     <Compile Include="User\UndeletedUser.cs" />
     <Compile Include="User\UndeletedUserByClientId.cs" />
+    <Compile Include="User\UniqueStsCredentialIdentifier.cs" />
     <Compile Include="User\Users.cs" />
   </ItemGroup>
   <ItemGroup>

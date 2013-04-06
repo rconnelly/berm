@@ -164,7 +164,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityDependencyResolver.cs" />
     <Compile Include="WebHandleErrorAttribute.cs" />
-    <Compile Include="WebValidationFilterAttribute.cs" />
     <Compile Include="WSFedRequestValidator.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,104 +5,6 @@
     ViewBag.Title = "Membership";
 }
 
-@section scripts
-{
-    <script type="text/javascript">
-        $(function() {
-            $('#userList').dataTable({
-                "bServerSide": true,
-                "sAjaxSource": '@Url.Action("Index")',
-                "fnServerData": function(sSource, aoData, fnCallback) {
-                    $.ajax({
-                        "dataType": "json",
-                        "type": "POST",
-                        "cache": false,
-                        "url": sSource,
-                        "data": aoData,
-                        "success": fnCallback,
-                        "error": function (jqXHR, textStatus, errorThrown) {
-                            // todo: process 401 correctly
-                            alert(errorThrown);
-                        }
-                    });
-                },
-                "fnRowCallback": function (nRow, aData) {
-                    if (aData[5] === "True") {
-                        $(nRow).addClass("user-disabled");
-                    }
-                    return nRow;
-                },
-                "aoColumnDefs": [
-                    {
-                        "aTargets": [0],
-                        "mData": 0,
-                        "sName": "Id",
-                        "sTitle": "Id",
-                        "bSearchable": false,
-                        "bSortable": false,
-                        "bVisible": false
-                    },
-                    {
-                        "aTargets": [1],
-                        "mData": 1,
-                        "sName": "Name",
-                        "sTitle": "Name",
-                        "mRender": function (data, type, full) {
-                            return '<a href="./Membership/Edit/' + full[0] + '">' + data + '</a>';
-                        }
-                    },
-                    {
-                        "aTargets": [2],
-                        "mData": 2,
-                        "sName": "Identifier",
-                        "sTitle": "Identifier"
-                    },
-                    {
-                        "aTargets": [3],
-                        "mData": 4,
-                        "sName": "Client",
-                        "sTitle": "Client"
-                    },
-                    {
-                        "aTargets": [4],
-                        "mData": 3,
-                        "sName": "Role",
-                        "sTitle": "Role"
-                    },
-                    {
-                        "aTargets": [5],
-                        "mData": 5,
-                        "sName": "Disabled",
-                        "sTitle": "Disabled",
-                        "bSearchable": false,
-                        "bSortable": false,
-                        "sWidth": "80px",
-                        "mRender": function (data) {
-                            return data == "True" ? 'Y' : 'N';
-                        }
-                    },
-                    {
-                        "aTargets": [6],
-                        "mData": 0,
-                        "sTitle": "",
-                        "bSearchable": false,
-                        "bSortable": false,
-                        "sWidth": "20px",
-                        "mRender": function (data) {
-                            return '<a href="./Membership/Delete/' + data + '" data-confirm="Are you sure you want to delete?"><i class="icon-remove"></i></a>';
-                        }
-                    }
-                ]
-            });
-            
-            
-        });
-        
-    </script>
-}
-
-  
-
 <div class="well well-small">
     <div class="btn-group">
         @if (User.HasPermission(AccessRight.ManageSuperAdmin))
@@ -131,15 +33,22 @@
         }
     </div>
 </div>
-
-@if (this.TempData["CompleteMessage"] != null)
-{
-    <div class="alert alert-success">
+    @{
+        var alertMode = this.TempData["CompleteMessage"] == null ? "none" : "block";   
+    }
+    <div class="alert alert-success" id="userActionComplete" style="display: @alertMode">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <h4>Complete!</h4>
-        @this.TempData["CompleteMessage"]
+        <span>@this.TempData["CompleteMessage"]</span>
     </div>
-}
+
 
 <table id="userList">
-</table>  
+</table>
+
+@section scripts
+{
+    <script type="text/javascript">
+     $($.app.manage.membership.list.ready);
+    </script>
+}

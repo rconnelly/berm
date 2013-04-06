@@ -54,7 +54,6 @@
             return this.View(model);
         }
 
-        [WebValidationFilter] // todo: filter is useless
         [HttpPost]
         public ActionResult Create(UserModel model)
         {
@@ -93,7 +92,6 @@
             return this.View(model);
         }
 
-        [WebValidationFilter]
         [HttpPost]
         public ActionResult Edit(UserModel model)
         {
@@ -121,12 +119,12 @@
 
         #region Delete
 
+        [HttpPost]
+        [ApiValidationFilter]
         public ActionResult Delete(long id)
         {
             this.Manager.DeleteUser(id);
-
-            this.TempData["CompleteMessage"] = "User successfully deleted.";
-            return this.RedirectToAction("Index");
+            return this.Json(new { message = "User successfully deleted" });
         }
 
         #endregion

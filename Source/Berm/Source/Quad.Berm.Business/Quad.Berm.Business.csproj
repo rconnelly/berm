@@ -155,6 +155,7 @@
     <Compile Include="IClientManager.cs" />
     <Compile Include="Impl\ClientManager.cs" />
     <Compile Include="Impl\RoleManager.cs" />
+    <Compile Include="Impl\Validation\StsCredentialValidator.cs" />
     <Compile Include="IRoleManager.cs" />
     <Compile Include="PrincipalExtension.cs" />
     <Compile Include="Impl\Validation\UserValidator.cs" />
