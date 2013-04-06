@@ -1,0 +1,54 @@
+﻿@using Quad.Berm.Business
+@using Quad.Berm.Data
+@using Quad.Berm.Web.Areas.Manage.Models
+@{
+    ViewBag.Title = "Membership";
+}
+
+<div class="well well-small">
+    <div class="btn-group">
+        @if (User.HasPermission(AccessRight.ManageSuperAdmin))
+        {
+            @Html.ActionLink("Create Local Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllLocalAdmins }, new { @class = "btn" })
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Create Super Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllSuperAdmins }, null)</li>
+                <li>@Html.ActionLink("Create User", "Create", "Membership", new { area = "Manage", option = UserModelOption.AllLocalUsers }, null)</li>
+            </ul>
+        }
+        else
+        {
+            @Html.ActionLink("Create User", "Create", "Membership", new { area = "Manage", option = UserModelOption.BindedLocalUsers }, new { @class = "btn" })
+            if (User.HasPermission(AccessRight.ManageLocalAdmin))
+            {
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Create Local Admin", "Create", "Membership", new { area = "Manage", option = UserModelOption.BindedLocalAdmins }, null)</li>
+                </ul>
+            }
+        }
+    </div>
+</div>
+    @{
+        var alertMode = this.TempData["CompleteMessage"] == null ? "none" : "block";   
+    }
+    <div class="alert alert-success" id="userActionComplete" style="display: @alertMode">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4>Complete!</h4>
+        <span>@this.TempData["CompleteMessage"]</span>
+    </div>
+
+
+<table id="userList">
+</table>
+
+@section scripts
+{
+    <script type="text/javascript">
+     $($.app.manage.membership.list.ready);
+    </script>
+}

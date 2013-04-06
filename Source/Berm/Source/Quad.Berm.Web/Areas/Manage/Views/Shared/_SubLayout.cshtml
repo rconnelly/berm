@@ -1,0 +1,35 @@
+﻿@using Quad.Berm.Business
+@using Quad.Berm.Data
+@using Quad.Berm.Web.Mvc.Helpers
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles
+{
+    @RenderSection("styles", false)
+}
+
+<div class="row-fluid">
+    <div class="span3">
+        <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                @if (User.HasPermission(AccessRight.ManageSecurity))
+                {
+                    <li class="nav-header">Security</li>
+                    <li @Html.ActiveItem("Membership", "Index")>@Html.ActionLink("Membership", "Index", "Membership", new { area = "Manage" }, null)</li>
+                    <li><a href="#">Roles</a></li>
+                }
+            </ul>
+        </div><!--/.well -->
+    </div><!--/span-->
+
+    <div class="span9">
+        @RenderBody()
+    </div><!--/span-->
+</div><!--/row-->
+
+@section scripts
+{
+    @RenderSection("scripts", false)
+}

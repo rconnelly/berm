@@ -35,3 +35,6 @@
 {
     
 }
+
+tr.user-disabled { color:gainsboro; }
+tr.user-disabled .icon-check { opacity: 0.2; }

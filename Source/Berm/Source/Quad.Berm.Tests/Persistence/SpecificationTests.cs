@@ -1,7 +1,5 @@
 ﻿namespace Quad.Berm.Tests.Persistence
 {
-    using Ach.Fulfillment.Data;
-
     using FluentNHibernate.Testing;
 
     using Microsoft.SqlServer.Types;

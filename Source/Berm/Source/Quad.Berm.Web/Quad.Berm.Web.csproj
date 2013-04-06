@@ -189,8 +189,9 @@
     <Reference Include="MVC Foolproof Validation">
       <HintPath>..\..\_libBinary\foolproof.0.9.4517\lib\MVC Foolproof Validation.dll</HintPath>
     </Reference>
-    <Reference Include="Mvc.JQuery.Datatables">
-      <HintPath>..\..\_libBinary\Mvc.JQuery.Datatables.1.2.42\lib\net40\Mvc.JQuery.Datatables.dll</HintPath>
+    <Reference Include="Mvc.JQuery.Datatables, Version=1.0.4840.40271, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\_libBinary\Mvc.JQuery.Datatables.1.2.50\lib\net40\Mvc.JQuery.Datatables.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\_libBinary\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -277,9 +278,16 @@
     <Compile Include="..\..\Common\GlobalVersionInfo.cs">
       <Link>Properties\GlobalVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Areas\Manage\Controllers\MembershipController.cs" />
+    <Compile Include="Areas\Manage\Controllers\MembershipManager.cs" />
+    <Compile Include="Areas\Manage\MainAreaRegistration.cs" />
+    <Compile Include="Areas\Manage\Models\UserGridModel.cs" />
+    <Compile Include="Areas\Manage\Models\UserModel.cs" />
+    <Compile Include="Areas\Manage\Models\UserModelOption.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Mvc\BundleConfig.cs" />
     <Compile Include="Mvc\FilterConfig.cs" />
+    <Compile Include="Mvc\Helpers\ControllerHelper.cs" />
     <Compile Include="Mvc\RouteConfig.cs" />
     <Compile Include="Areas\Main\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Main\Controllers\HomeController.cs" />
@@ -299,16 +307,22 @@
     </CodeAnalysisDictionary>
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap.css" />
+    <Content Include="css\jquery.dataTables.css" />
     <Content Include="css\main.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="img\ajax-loader.gif" />
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
     <Content Include="img\header_logo.png" />
+    <Content Include="js\app.js" />
+    <Content Include="js\site.bootstrap.validate.js" />
     <Content Include="js\vendor\additional-methods.js" />
     <Content Include="js\vendor\bootstrap-2.3.1.js" />
     <Content Include="js\vendor\jquery-1.9.1.js" />
     <Content Include="js\vendor\jquery-migrate-1.1.1.js" />
+    <Content Include="js\vendor\jquery.dataTables.bootstrap.js" />
+    <Content Include="js\vendor\jquery.dataTables.js" />
     <Content Include="js\vendor\jquery.unobtrusive-ajax.js" />
     <Content Include="js\vendor\jquery.validate-1.11.1.js" />
     <Content Include="js\vendor\jquery.validate.unobtrusive.js" />
@@ -333,8 +347,18 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Manage\Views\Web.config" />
+    <Content Include="Areas\Manage\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Manage\Views\Shared\_SubLayout.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\Index.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\Create.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\Edit.cshtml" />
+    <Content Include="Areas\Manage\Views\Membership\_UserDetails.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\Error401.cshtml" />
+    <Content Include="Views\Shared\_errorSummary.cshtml">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Main\Views\Home\Index.cshtml" />

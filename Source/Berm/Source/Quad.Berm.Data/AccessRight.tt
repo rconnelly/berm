@@ -3,9 +3,11 @@
 <#
 string[] rights = new string[]
   {
+  "ManageSecurity",
   "ManageSuperAdmin",
   "ManageLocalAdmin",
-  "ManageUser"
+  "ManageUser",
+  "ManageClients",
   };
 
 
@@ -13,7 +15,7 @@ string[] rights = new string[]
 
 
   #>
-  namespace Ach.Fulfillment.Data
+  namespace Quad.Berm.Data
   {
   public enum AccessRight
   {

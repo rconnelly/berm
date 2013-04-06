@@ -7,8 +7,6 @@
     using System.Security.Claims;
     using System.Threading;
 
-    using Ach.Fulfillment.Data;
-
     using NHibernate;
     using NHibernate.Linq;
 

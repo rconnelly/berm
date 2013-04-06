@@ -154,10 +154,8 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\RootException.cs" />
     <Compile Include="Logging\LeveledTraceAppender.cs" />
-    <Compile Include="Security\IApplicationPrincipal.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Security\ThreadApplicationPrincipal.cs" />
+    <Compile Include="Security\PrincipalExtension.cs" />
+    <Compile Include="Security\ThreadPrincipal.cs" />
     <Compile Include="Unity\Shell.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transactions\ITransactionManager.cs" />

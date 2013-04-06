@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
+    using System.IdentityModel.Services;
     using System.Linq;
     using System.Web;
     using System.Web.Http;
@@ -13,6 +14,8 @@
 
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.ServiceRuntime;
+
+    using global::Mvc.JQuery.Datatables;
 
     using Newtonsoft.Json.Serialization;
 
@@ -28,6 +31,21 @@
         #region Fields
 
         private const string AmbientContextKey = "ac";
+
+        #endregion
+
+        #region Properties
+
+        private bool IsJsonRequest
+        {
+            get
+            {
+                var isjson =
+                    (this.Request.AcceptTypes ?? new string[0]).Any(
+                        t => string.Equals(t, "application/json", StringComparison.OrdinalIgnoreCase));
+                return isjson;
+            }
+        }
 
         #endregion
 
@@ -52,8 +70,13 @@
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             MvcHandler.DisableMvcResponseHeader = true;
-            
+
+            ModelBinders.Binders.Add(typeof(DataTablesParam), new DataTablesModelBinder());
+
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            
+            FederatedAuthentication.WSFederationAuthenticationModule.SessionSecurityTokenCreated += this.WSFederationAuthenticationModule_SessionSecurityTokenCreated;
+            FederatedAuthentication.SessionAuthenticationModule.SessionSecurityTokenReceived += this.SessionAuthenticationModule_SessionSecurityTokenReceived;
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
@@ -61,9 +84,48 @@
             this.Context.Items.Add(AmbientContextKey, new AmbientContext());
         }
 
+        protected void WSFederationAuthenticationModule_SessionSecurityTokenCreated(object sender, SessionSecurityTokenCreatedEventArgs e)
+        {
+            // uncomment if you want to decrease cookie size
+            // after uncommenting you should implement distributed sessionSecurityTokenCache (http://msdn.microsoft.com/en-us/library/hh545457.aspx)
+            // e.SessionToken.IsReferenceMode = true;
+        }
+
+        protected void SessionAuthenticationModule_SessionSecurityTokenReceived(object sender, SessionSecurityTokenReceivedEventArgs e)
+        {
+            // sliding session implementation (based on http://www.cloudidentity.com/blog/2010/06/16/WARNING-SLIDING-SESSIONS-ARE-CLOSER-THAN-THEY-APPEAR/)
+            var now = DateTime.UtcNow; 
+            var validFrom = e.SessionToken.ValidFrom.ToUniversalTime();
+            var validTo = e.SessionToken.ValidTo.ToUniversalTime();
+            var timeout = validTo - validFrom;
+            var window = timeout.TotalMinutes / 2;
+            
+            // do not want to set cookie each time
+            if (now < validTo && now > validFrom.AddMinutes(window))
+            {
+                var sam = (SessionAuthenticationModule)sender;
+                validFrom = now;
+                validTo = validFrom.Add(timeout);
+                var isReferenceMode = e.SessionToken.IsReferenceMode;
+                e.SessionToken = sam.CreateSessionSecurityToken(
+                    e.SessionToken.ClaimsPrincipal,
+                    e.SessionToken.Context,
+                    validFrom,
+                    validTo, 
+                    e.SessionToken.IsPersistent);
+                e.SessionToken.IsReferenceMode = isReferenceMode;
+                e.ReissueCookie = true; 
+            } 
+        }
+
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            if (StatusHasErrorPage(this.Response.StatusCode))
+            if (this.Response.StatusCode == 302 && this.Response.RedirectLocation != null && this.IsJsonRequest)
+            {
+                this.Response.Clear();
+                this.Response.StatusCode = 401;
+            }
+            else if (StatusHasErrorPage(this.Response.StatusCode))
             {
                 this.ShowSpecialErrorPage(this.Response.StatusCode);
             }
@@ -109,9 +171,7 @@
 
             if (!this.Context.Items.Contains(Key))
             {
-                var isjson =
-                    (this.Request.AcceptTypes ?? new string[0]).Any(
-                        t => string.Equals(t, "application/json", StringComparison.OrdinalIgnoreCase));
+                var isjson = this.IsJsonRequest;
 
                 if (isjson)
                 {
