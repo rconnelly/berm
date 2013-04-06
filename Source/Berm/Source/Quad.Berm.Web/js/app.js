@@ -195,6 +195,7 @@ $.app.manage.membership.list.ready = function() {
         $.app.confirm(
             "Are you sure you want to delete user '" + name + "'?",
             function () {
+                // todo: use amlifyjs: http://amplifyjs.com/
                 $.ajax({
                     "dataType": "json",
                     "type": "POST",
