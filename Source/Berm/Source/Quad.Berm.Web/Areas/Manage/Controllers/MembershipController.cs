@@ -57,7 +57,6 @@
         [HttpPost]
         public ActionResult Create(UserModel model)
         {
-            // todo: check identifier duplication
             if (this.ModelState.IsValid)
             {
                 try
