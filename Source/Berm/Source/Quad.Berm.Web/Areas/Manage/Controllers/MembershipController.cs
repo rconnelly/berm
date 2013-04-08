@@ -123,7 +123,14 @@
         public ActionResult Delete(long id)
         {
             this.Manager.DeleteUser(id);
-            return this.Json(new { message = "User successfully deleted" });
+            return this.Json(new
+                                 {
+                                     status = "success",
+                                     data = new
+                                     {
+                                         message = "User successfully deleted"
+                                     }
+                                 });
         }
 
         #endregion
