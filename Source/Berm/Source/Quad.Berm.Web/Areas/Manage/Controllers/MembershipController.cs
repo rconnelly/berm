@@ -123,7 +123,14 @@
         public ActionResult Delete(long id)
         {
             this.Manager.DeleteUser(id);
-            return this.Json(new { message = "User successfully deleted" });
+            return this.Json(new
+                                 {
+                                     status = "success",
+                                     data = new
+                                     {
+                                         message = "User successfully deleted"
+                                     }
+                                 });
         }
 
         #endregion
@@ -150,15 +157,6 @@
                 clientId,
                 (id, name) => new ClientEntity { Name = name, Id = id },
                 (id, r) => r.Id == id);
-
-            var roles = this.Manager.GetRoles(option, clientId).ToList();
-            var roleAllowEmpty = roles.Count > 1;
-            var roleId = model.Role;
-            this.ViewBag.Role = roles.ToSelectList(
-                roleId,
-                (id, name) => new RoleEntity { Name = name, Id = id }, 
-                (id, r) => r.Id == id,
-                allowEmpty: roleAllowEmpty);
         }
 
         #endregion

@@ -18,9 +18,12 @@ namespace Quad.Berm.Mvc.Data
                                 FieldName = e.PropertyName,
                                 Message = e.ErrorMessage
                             };
-            operationError.Errors = r.ToArray();
-            operationError.Message = operationError.Errors.Select(e => e.Message).FirstOrDefault() ?? ex.Message;
+
+            var errors = r.ToArray();
+            operationError.Status = "fail";
             operationError.ErrorCode = ex.GetType().Name;
+            operationError.Message = operationError.Data.Select(e => e.Message).FirstOrDefault() ?? ex.Message;
+            operationError.Data = errors;
         }
     }
 }

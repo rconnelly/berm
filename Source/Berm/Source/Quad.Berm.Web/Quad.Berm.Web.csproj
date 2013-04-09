@@ -315,9 +315,13 @@
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
     <Content Include="img\header_logo.png" />
-    <Content Include="js\app.js" />
+    <Content Include="js\app.amplify.js" />
+    <Content Include="js\app.main.js" />
+    <Content Include="js\app.module.manage.membership.details.js" />
+    <Content Include="js\app.module.manage.membership.list.js" />
     <Content Include="js\site.bootstrap.validate.js" />
     <Content Include="js\vendor\additional-methods.js" />
+    <Content Include="js\vendor\amplify-1.1.0.js" />
     <Content Include="js\vendor\bootstrap-2.3.1.js" />
     <Content Include="js\vendor\jquery-1.9.1.js" />
     <Content Include="js\vendor\jquery-migrate-1.1.1.js" />
@@ -326,6 +330,7 @@
     <Content Include="js\vendor\jquery.unobtrusive-ajax.js" />
     <Content Include="js\vendor\jquery.validate-1.11.1.js" />
     <Content Include="js\vendor\jquery.validate.unobtrusive.js" />
+    <Content Include="js\vendor\knockout-2.2.1.js" />
     <Content Include="js\vendor\modernizr-2.6.2.js" />
     <Content Include="js\vendor\mvcfoolproof.unobtrusive.js" />
     <Content Include="Web.config">

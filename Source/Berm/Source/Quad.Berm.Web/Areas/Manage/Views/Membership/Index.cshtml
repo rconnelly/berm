@@ -33,15 +33,12 @@
         }
     </div>
 </div>
-    @{
-        var alertMode = this.TempData["CompleteMessage"] == null ? "none" : "block";   
-    }
-    <div class="alert alert-success" id="userActionComplete" style="display: @alertMode">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <h4>Complete!</h4>
-        <span>@this.TempData["CompleteMessage"]</span>
-    </div>
 
+<div class="alert alert-success" id="userActionComplete" data-bind="visible: successMessage() != null" style="display: none">
+    <button type="button" class="close" data-bind="click: hideAlert">&times;</button>
+    <h4>Complete!</h4>
+    <span data-bind="text: successMessage">@this.TempData["CompleteMessage"]</span>
+</div>
 
 <table id="userList">
 </table>
@@ -49,6 +46,9 @@
 @section scripts
 {
     <script type="text/javascript">
-     $($.app.manage.membership.list.ready);
+        @if (this.TempData["CompleteMessage"] != null) {
+            @:$.app.manage.membership.list.model.successMessage('@this.TempData["CompleteMessage"]');
+        }
+        $($.app.manage.membership.list.ready);
     </script>
 }

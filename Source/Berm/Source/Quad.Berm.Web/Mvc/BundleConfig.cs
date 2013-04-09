@@ -27,8 +27,12 @@
                 "~/js/vendor/mvcfoolproof.unobtrusive*",
                 "~/js/vendor/jquery.dataTables.js",
                 "~/js/vendor/jquery.dataTables.bootstrap.js",
+                "~/js/vendor/knockout*",
+                "~/js/vendor/amplify*",
                 "~/js/site.bootstrap.validate.js",
-                "~/js/app.js"));
+                "~/js/app.main.js",
+                "~/js/app.amplify.js",
+                "~/js/app.module*"));
         }
     }
 }
