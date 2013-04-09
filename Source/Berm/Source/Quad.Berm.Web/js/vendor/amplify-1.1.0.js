@@ -158,7 +158,7 @@ function createFromStorageInterface( storageType, storage ) {
 			remove = [];
 			i = 0;
 			try {
-				// accessing the length property works around a localStorage bug
+				// accessing the length property works around a localStorage b_u_g
 				// in Firefox 4.0 where the keys don't update cross-page
 				// we assign to key just to avoid Closure Compiler from removing
 				// the access as "useless code"
@@ -583,12 +583,12 @@ amplify.request.types.ajax = function( defnSettings ) {
 				} catch( e ) {}
 			});
 			// Playbook returns "HTTP/1.1 200 OK"
-			// TODO: something also returns "OK", what?
+			// T_O_D_O: something also returns "OK", what?
 			if ( /OK$/.test( ampXHR.statusText ) ) {
 				ampXHR.statusText = "success";
 			}
 			if ( data === undefined ) {
-				// TODO: add support for ajax errors with data
+			    // T_O_D_O: add support for ajax errors with data
 				data = null;
 			}
 			if ( aborted ) {
@@ -601,7 +601,7 @@ amplify.request.types.ajax = function( defnSettings ) {
 			}
 			// avoid handling a response multiple times
 			// this can happen if a request is aborted
-			// TODO: figure out if this breaks polling or multi-part responses
+		    // T_O_D_O: figure out if this breaks polling or multi-part responses
 			handleResponse = $.noop;
 		}
 
